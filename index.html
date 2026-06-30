@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CMZ Stock</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+:root{
+  --background:#f0f1f8; --card:#ffffff; --secondary:#f7f8fc;
+  --border:rgba(0,0,0,.06); --input:rgba(0,0,0,.10);
+  --foreground:#1e293b; --muted-foreground:#64748b;
+  --cz-primary:#4c8bf5; --sh-orange:#f59e0b; --sh-green:#10b981; --sh-red:#ef4444;
+  --sh-green-light:#ecfdf5; --sh-orange-light:#fef3c7; --sh-red-light:#fef2f2; --sh-blue-light:#eff6ff;
+  --font-sans:'Sarabun',system-ui,sans-serif; --font-mono:'Space Mono',monospace;
+  --brand-gradient:linear-gradient(135deg,#60a5fa,#4c8bf5);
+}
+  html,body{margin:0;padding:0}
+  body{background:var(--background,#f0f1f8)}
+  .cmz-app{
+    --bg:var(--background,#f0f1f8);--panel:var(--card,#ffffff);--panel-2:var(--secondary,#f7f8fc);--panel-3:#eceef6;
+    --line:var(--border,rgba(0,0,0,.06));--line-2:var(--input,rgba(0,0,0,.10));
+    --ink:var(--foreground,#1e293b);--ink-dim:var(--muted-foreground,#64748b);--ink-faint:#94a3b8;
+    --gold:var(--cz-primary,#4c8bf5);--gold-2:var(--cz-primary,#4c8bf5);--orange:var(--sh-orange,#f59e0b);
+    --ok:var(--sh-green,#10b981);--warn:var(--sh-orange,#f59e0b);--short:var(--sh-red,#ef4444);
+    --ok-bg:var(--sh-green-light,#ecfdf5);--warn-bg:var(--sh-orange-light,#fef3c7);--short-bg:var(--sh-red-light,#fef2f2);
+    --blue-bg:var(--sh-blue-light,#eff6ff);--orange-bg:var(--sh-orange-light,#fef3c7);
+    --r:14px;--r-sm:8px;
+    font-family:var(--font-sans,'Sarabun',system-ui,sans-serif);color:var(--ink);font-size:14px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;min-height:100vh;background:var(--bg);
+  }
+  .cmz-app *{box-sizing:border-box}
+  .cmz-app .mono,.cmz-app .num{font-family:var(--font-mono,'Space Mono',monospace);font-variant-numeric:tabular-nums}
+  .cmz-app .dpl{font-family:var(--font-sans,'Plus Jakarta Sans',sans-serif);font-weight:800}
+  .cmz-app svg{display:block}
+  .cmz-app i[data-lucide]{display:inline-flex}
+
+  .cmz-app .hd{display:flex;align-items:center;gap:14px;padding:16px 22px;
+    position:sticky;top:0;z-index:50;
+    background:rgba(255,255,255,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .cmz-app .brand{display:flex;align-items:center;gap:12px}
+  .cmz-app .mark{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+    background:var(--brand-gradient,linear-gradient(135deg,#a78bfa,#7c3aed));color:#fff;
+    box-shadow:0 6px 16px -8px rgba(124,58,237,.5)}
+  .cmz-app .mark svg{width:21px;height:21px;stroke-width:2.4}
+  .cmz-app .brand-name{font-weight:700;font-size:16.5px;letter-spacing:.2px}
+  .cmz-app .brand-sub{color:var(--ink-faint);font-size:12px;margin-top:1px}
+  .cmz-app .spacer{flex:1}
+  .cmz-app .io{display:inline-flex;align-items:center;gap:7px;background:var(--panel-2);color:var(--ink-dim);
+    border:1px solid var(--line-2);padding:8px 14px;border-radius:11px;cursor:pointer;font-family:inherit;font-size:12.5px;
+    transition:.15s}
+  .cmz-app .io svg{width:15px;height:15px}
+  .cmz-app .io:hover{color:var(--ink);border-color:var(--gold);background:var(--panel-3)}
+
+  .cmz-app .tabs{display:flex;gap:6px;padding:12px 18px;overflow-x:auto;
+    position:sticky;top:73px;z-index:40;background:rgba(247,248,252,.88);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);scrollbar-width:thin}
+  .cmz-app .tabs::-webkit-scrollbar{height:0}
+  .cmz-app .tabs button{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid transparent;
+    color:var(--ink-dim);font-family:inherit;padding:9px 15px;cursor:pointer;font-size:13.5px;font-weight:600;
+    border-radius:999px;white-space:nowrap;transition:.15s}
+  .cmz-app .tabs button svg{width:16px;height:16px}
+  .cmz-app .tabs button:hover{color:var(--ink);background:var(--panel-2)}
+  .cmz-app .tabs button.active{color:#fff;background:var(--gold);
+    box-shadow:0 4px 12px -4px rgba(76,139,245,.5)}
+
+  .cmz-app main{padding:26px 22px 60px;max-width:1180px;margin:0 auto}
+  .cmz-app .view{display:none;animation:cmzfade .25s ease}
+  .cmz-app .view.active{display:block}
+  @keyframes cmzfade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .cmz-app .title{font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:.2px}
+  .cmz-app .lead{color:var(--ink-dim);font-size:13.5px;margin:0 0 20px;max-width:680px}
+
+  .cmz-app .hero{display:grid;grid-template-columns:300px 1fr;gap:26px;align-items:center;
+    background:var(--panel);
+    border:1px solid var(--line);border-radius:16px;padding:26px;margin-bottom:18px;position:relative;overflow:hidden;
+    box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .cmz-app .hero-media{position:relative;z-index:1}
+  .cmz-app .hero-media image-slot{width:100%;height:230px;display:block;
+    box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .cmz-app .hero-body{position:relative;z-index:1}
+  .cmz-app .eyebrow{font-size:11.5px;letter-spacing:2px;font-weight:700;color:var(--gold);text-transform:uppercase}
+  .cmz-app .hero-title{font-size:32px;font-weight:800;margin:8px 0 6px;letter-spacing:.2px}
+  .cmz-app .hero-lead{color:var(--ink-dim);font-size:14px;margin:0 0 18px;max-width:440px}
+  .cmz-app .hero-stats{display:flex;gap:14px;flex-wrap:wrap}
+  .cmz-app .hs{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:12px 16px;min-width:96px}
+  .cmz-app .hs-v{font-size:24px;font-weight:800;line-height:1}
+  .cmz-app .hs-l{font-size:11.5px;color:var(--ink-faint);margin-top:5px}
+
+  .cmz-app .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:18px;
+    box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .cmz-app .card h3{font-size:14.5px;font-weight:700;margin:0 0 16px;display:flex;align-items:center;gap:10px}
+  .cmz-app .card h3 .tag{font-size:11.5px;color:var(--ink-faint);font-weight:400}
+
+  .cmz-app .ic{width:34px;height:34px;border-radius:11px;display:inline-flex;align-items:center;justify-content:center;
+    background:var(--panel-2);color:var(--ink-dim);flex:none}
+  .cmz-app .ic svg{width:17px;height:17px;stroke-width:2}
+  .cmz-app .ic.gold{background:var(--blue-bg);color:var(--gold)}
+  .cmz-app .ic.orange{background:var(--orange-bg);color:var(--orange)}
+  .cmz-app .ic.warn{background:var(--warn-bg);color:var(--warn)}
+
+  .cmz-app .grid{display:grid;gap:18px}
+  @media(min-width:780px){.cmz-app .cols-2{grid-template-columns:1fr 1fr}}
+
+  .cmz-app label.fld{display:block;margin-bottom:14px}
+  .cmz-app label.fld span{display:block;font-size:12px;color:var(--ink-dim);margin-bottom:6px;font-weight:500}
+  .cmz-app input,.cmz-app select,.cmz-app textarea{width:100%;background:var(--panel-2);border:1px solid var(--line-2);
+    color:var(--ink);padding:10px 12px;border-radius:10px;font-family:inherit;font-size:13.5px;transition:.15s}
+  .cmz-app input:focus,.cmz-app select:focus,.cmz-app textarea:focus{outline:none;border-color:var(--gold);
+    box-shadow:0 0 0 3px rgba(76,139,245,.25)}
+  .cmz-app input.mono{font-family:var(--font-mono,'Space Mono',monospace)}
+  .cmz-app textarea{resize:vertical;min-height:60px}
+  .cmz-app select{cursor:pointer}
+
+  .cmz-app button.act{display:inline-flex;align-items:center;gap:8px;background:var(--gold);
+    color:#fff;border:none;padding:10px 18px;border-radius:var(--r-sm);cursor:pointer;font-family:inherit;font-weight:600;font-size:13.5px;
+    box-shadow:0 1px 2px rgba(0,0,0,.06);transition:.15s}
+  .cmz-app button.act:hover{filter:brightness(.93)}
+  .cmz-app button.act:disabled{opacity:.4;cursor:not-allowed;filter:none;transform:none;box-shadow:none}
+  .cmz-app button.ghost{background:var(--panel-2);color:var(--ink);border:1px solid var(--line-2);padding:10px 16px;
+    border-radius:11px;cursor:pointer;font-family:inherit;font-size:13px;transition:.15s}
+  .cmz-app button.ghost:hover{border-color:var(--gold);background:var(--panel-3)}
+  .cmz-app button.mini{background:var(--panel-2);border:1px solid var(--line-2);color:var(--ink-dim);padding:5px 11px;
+    border-radius:8px;cursor:pointer;font-family:inherit;font-size:12px;transition:.15s}
+  .cmz-app button.mini:hover{color:var(--ink);border-color:var(--gold)}
+  .cmz-app button.danger{color:var(--short);border-color:transparent;background:transparent}
+  .cmz-app button.danger:hover{border-color:var(--short);background:var(--short-bg)}
+
+  .cmz-app .tw{overflow-x:auto;margin:0 -4px}
+  .cmz-app table{width:100%;border-collapse:collapse;font-size:13px}
+  .cmz-app .tw table{min-width:720px}
+  .cmz-app th{text-align:left;color:var(--ink-dim);font-weight:600;font-size:11px;text-transform:uppercase;
+    letter-spacing:.5px;padding:9px 12px;background:var(--panel-2);border-bottom:1px solid var(--line)}
+  .cmz-app td{padding:11px 12px;border-bottom:1px solid var(--line)}
+  .cmz-app tbody tr{transition:.12s}
+  .cmz-app tbody tr:hover td{background:var(--panel-2)}
+  .cmz-app td.num,.cmz-app th.num{text-align:right;font-family:var(--font-mono,'Space Mono',monospace);font-variant-numeric:tabular-nums}
+  .cmz-app .mat-cell{display:flex;align-items:center;gap:11px}
+  .cmz-app .mini-ic{width:13px;height:13px;color:var(--orange);margin-right:5px;vertical-align:-2px;display:inline-flex}
+
+  .cmz-app .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:11px;
+    font-weight:700;font-family:'IBM Plex Mono',monospace}
+  .cmz-app .pill.ok{background:var(--ok-bg);color:var(--ok)}
+  .cmz-app .pill.warn{background:var(--warn-bg);color:var(--warn)}
+  .cmz-app .pill.short{background:var(--short-bg);color:var(--short)}
+
+  .cmz-app .empty{display:flex;align-items:center;justify-content:center;gap:8px;color:var(--ink-faint);font-size:13px;
+    padding:26px;text-align:center}
+  .cmz-app .empty svg{width:16px;height:16px;color:var(--ok)}
+
+  .cmz-app .bomrow{display:grid;grid-template-columns:1.4fr 120px 86px 86px 30px;gap:7px;margin-bottom:8px;align-items:center}
+  .cmz-app .bomrow input,.cmz-app .bomrow select{padding:7px 9px;font-size:12.5px}
+  @media(max-width:640px){.cmz-app .bomrow{grid-template-columns:1fr 1fr;gap:6px}}
+
+  .cmz-app .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:20px}
+  .cmz-app .kpi{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;position:relative;overflow:hidden}
+  .cmz-app .kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold);opacity:0}
+  .cmz-app .kpi.s-short::before{background:var(--short);opacity:1}
+  .cmz-app .kpi.s-warn::before{background:var(--warn);opacity:1}
+  .cmz-app .kpi.s-ok::before{background:var(--ok);opacity:1}
+  .cmz-app .kv{font-size:30px;font-weight:800;line-height:1}
+  .cmz-app .kpi.s-short .kv{color:var(--short)}
+  .cmz-app .kpi.s-warn .kv{color:var(--warn)}
+  .cmz-app .kpi.s-ok .kv{color:var(--ok)}
+  .cmz-app .kpi.s-budget .kv{color:var(--gold)}
+  .cmz-app .kpi.s-budget::before{background:var(--gold);opacity:1}
+  .cmz-app .kl{font-size:12px;color:var(--ink-dim);margin-top:7px}
+
+  .cmz-app details.led{border:1px solid var(--line);border-radius:14px;margin-bottom:10px;background:var(--panel);overflow:hidden}
+  .cmz-app details.led summary{padding:13px 16px;cursor:pointer;list-style:none;display:flex;align-items:center;gap:11px;font-size:13.5px}
+  .cmz-app details.led summary::-webkit-details-marker{display:none}
+  .cmz-app details.led summary .chev{color:var(--ink-faint);transition:transform .18s;display:inline-flex}
+  .cmz-app details.led summary .chev svg{width:16px;height:16px}
+  .cmz-app details.led[open] summary .chev{transform:rotate(90deg)}
+  .cmz-app details.led summary .when{color:var(--ink-faint);font-family:var(--font-mono,'Space Mono',monospace);font-size:12px}
+  .cmz-app details.led summary .qty{margin-left:auto;color:var(--ink-dim);font-family:var(--font-mono,'Space Mono',monospace);font-size:12px}
+  .cmz-app details.led .body{padding:4px 16px 16px;border-top:1px solid var(--line)}
+
+  .cmz-app .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(90px);
+    background:var(--panel);border:1px solid var(--line-2);color:var(--ink);padding:12px 20px;border-radius:12px;
+    font-size:13.5px;box-shadow:0 12px 32px -12px rgba(0,0,0,.25);transition:transform .28s cubic-bezier(.2,.9,.3,1.2);z-index:100;max-width:90vw}
+  .cmz-app .toast.show{transform:translateX(-50%) translateY(0)}
+  .cmz-app .toast.ok{border-color:var(--ok)}
+  .cmz-app .toast.err{border-color:var(--short)}
+
+  .cmz-app .row-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .cmz-app .inline-add{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+  .cmz-app .inline-add label.fld{margin-bottom:0;flex:1;min-width:130px}
+  .cmz-app .hint{font-size:12px;color:var(--ink-faint);margin-top:8px;line-height:1.5}
+  .cmz-app .divider{height:1px;background:var(--line);margin:18px 0}
+  .cmz-app .search{margin-bottom:14px}
+  .cmz-app .sub-head{font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.6px;
+    display:flex;align-items:center;gap:7px;margin:6px 0 8px;font-weight:600}
+  .cmz-app .sub-head svg{width:14px;height:14px}
+  .cmz-app .sub-head.gap{margin-top:20px}
+
+  .cmz-app .stepper{display:inline-flex;border:1px solid var(--line-2);border-radius:9px;overflow:hidden}
+  .cmz-app .stepper button{background:var(--panel-2);border:none;border-right:1px solid var(--line);
+    color:var(--ink-faint);font-family:inherit;font-size:11.5px;padding:6px 11px;cursor:pointer;white-space:nowrap;transition:.12s}
+  .cmz-app .stepper button:last-child{border-right:none}
+  .cmz-app .stepper button.done{background:var(--ok-bg);color:var(--ok);font-weight:600}
+  .cmz-app .stepper button.cur{background:var(--gold);color:#fff;font-weight:700}
+  .cmz-app .stepper button:hover{filter:brightness(1.12)}
+  .cmz-app .st-cell{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .cmz-app .st-clear{font-size:11px;color:var(--ink-faint);background:none;border:none;cursor:pointer;text-decoration:underline}
+  .cmz-app .st-clear:hover{color:var(--ink-dim)}
+
+  /* Job Orders */
+  .cmz-app .job-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:20px}
+  .cmz-app .jkpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;gap:13px;align-items:center}
+  .cmz-app .jkpi .jk-ic{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none}
+  .cmz-app .jkpi .jk-ic svg{width:20px;height:20px}
+  .cmz-app .jkpi .jk-v{font-size:22px;font-weight:800;line-height:1}
+  .cmz-app .jkpi .jk-l{font-size:11.5px;color:var(--ink-dim);margin-top:4px}
+  .cmz-app .jk-blue{background:var(--blue-bg);color:var(--gold)}
+  .cmz-app .jk-warn{background:var(--warn-bg);color:var(--warn)}
+  .cmz-app .jk-red{background:var(--short-bg);color:var(--short)}
+  .cmz-app .jk-green{background:var(--ok-bg);color:var(--ok)}
+
+  .cmz-app .job{border:1px solid var(--line);border-radius:14px;margin-bottom:12px;background:var(--panel);overflow:hidden;
+    border-left:4px solid var(--ink-faint);transition:.15s}
+  .cmz-app .job.s-pending{border-left-color:var(--ink-faint)}
+  .cmz-app .job.s-producing{border-left-color:var(--gold)}
+  .cmz-app .job.s-partial{border-left-color:var(--warn)}
+  .cmz-app .job.s-done{border-left-color:var(--ok)}
+  .cmz-app .job.overdue{border-left-color:var(--short)}
+  .cmz-app .job-head{display:flex;align-items:flex-start;gap:14px;padding:15px 17px;cursor:pointer}
+  .cmz-app .job-cust{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+  .cmz-app .job-prod{font-size:15px;font-weight:700;margin-top:2px}
+  .cmz-app .job-meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--ink-dim)}
+  .cmz-app .job-meta b{color:var(--ink);font-weight:600;font-family:var(--font-mono,monospace)}
+  .cmz-app .job-right{margin-left:auto;text-align:right;flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+  .cmz-app .countdown{font-size:13px;font-weight:700;padding:4px 11px;border-radius:999px;white-space:nowrap;font-family:var(--font-mono,monospace)}
+  .cmz-app .cd-ok{background:var(--ok-bg);color:var(--ok)}
+  .cmz-app .cd-soon{background:var(--warn-bg);color:var(--warn)}
+  .cmz-app .cd-over{background:var(--short-bg);color:var(--short)}
+  .cmz-app .cd-done{background:var(--panel-2);color:var(--ink-faint)}
+  .cmz-app .job-stat{font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px}
+  .cmz-app .js-pending{background:var(--panel-2);color:var(--ink-dim)}
+  .cmz-app .js-producing{background:var(--blue-bg);color:var(--gold)}
+  .cmz-app .js-partial{background:var(--warn-bg);color:var(--warn)}
+  .cmz-app .js-done{background:var(--ok-bg);color:var(--ok)}
+  .cmz-app .progress{height:7px;background:var(--panel-3);border-radius:999px;overflow:hidden;margin-top:10px}
+  .cmz-app .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-2));border-radius:999px;transition:width .3s}
+  .cmz-app .job-body{border-top:1px solid var(--line);padding:15px 17px;background:var(--panel-2)}
+  .cmz-app .ship-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:7px 0;border-bottom:1px dashed var(--line);font-size:12.5px}
+  .cmz-app .ship-row:last-child{border-bottom:none}
+  .cmz-app .ship-in{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-top:10px}
+  .cmz-app .ship-in label.fld{margin-bottom:0}
+
+  /* sync badge + settings */
+  .cmz-app .sync-badge{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+  .cmz-app .sync-badge svg{width:14px;height:14px}
+  .cmz-app .badge-local{background:var(--panel-2);color:var(--ink-dim);border:1px solid var(--line-2)}
+  .cmz-app .badge-sync{background:var(--blue-bg);color:var(--gold)}
+  .cmz-app .badge-sync svg{animation:spin 1s linear infinite}
+  .cmz-app .badge-ok{background:var(--ok-bg);color:var(--ok)}
+  .cmz-app .badge-err{background:var(--short-bg);color:var(--short)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .cmz-app .setup-steps{counter-reset:step}
+  .cmz-app .setup-step{position:relative;padding:0 0 18px 42px;margin-bottom:2px}
+  .cmz-app .setup-step:not(:last-child)::after{content:'';position:absolute;left:14px;top:30px;bottom:0;width:2px;background:var(--line)}
+  .cmz-app .setup-step::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:0;width:29px;height:29px;border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+  .cmz-app .setup-step h4{font-size:14px;font-weight:700;margin:3px 0 6px}
+  .cmz-app .setup-step p{font-size:13px;color:var(--ink-dim);margin:0 0 6px;line-height:1.7}
+  .cmz-app .setup-step code{background:var(--panel-3);padding:2px 7px;border-radius:5px;font-family:var(--font-mono,monospace);font-size:12px;color:var(--gold)}
+  .cmz-app .code-block{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:14px 16px 14px;font-family:var(--font-mono,monospace);font-size:12px;line-height:1.7;overflow-x:auto;margin:8px 0;white-space:pre;position:relative}
+  .cmz-app .code-block button{position:sticky;top:0;float:right;background:rgba(255,255,255,.14);color:#fff;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-family:inherit}
+  .cmz-app .code-block button:hover{background:rgba(255,255,255,.24)}
+
+  @media(max-width:780px){
+    .cmz-app .hero{grid-template-columns:1fr;gap:18px;padding:20px}
+    .cmz-app .hero-media image-slot{height:190px}
+    .cmz-app .hero-title{font-size:26px}
+    .cmz-app main{padding:20px 16px 50px}
+    .cmz-app .hd{padding:14px 16px}
+    .cmz-app .brand-sub{display:none}
+    .cmz-app .job-head{flex-wrap:wrap}
+    .cmz-app .job-right{margin-left:0;width:100%;flex-direction:row;justify-content:space-between;align-items:center}
+  }
+</style>
+</head>
+<body>
+  <div class="cmz-app">
+    <header class="hd">
+      <div class="brand">
+        <span class="mark"><i data-lucide="package-2"></i></span>
+        <div><div class="brand-name">CMZ Stock</div><div class="brand-sub">ระบบตัดสต็อกตามรอบผลิต · Ledger ถาวร</div></div>
+      </div>
+      <div class="spacer"></div>
+      <span class="sync-badge badge-local" id="syncBadge"><i data-lucide="hard-drive"></i> เก็บในเครื่อง</span>
+      <button class="io" onclick="cmzExportData()"><i data-lucide="download"></i> ส่งออก</button>
+      <button class="io" onclick="document.getElementById('cmzImportFile').click()"><i data-lucide="upload"></i> นำเข้า</button>
+      <input type="file" id="cmzImportFile" accept=".json" style="display:none" onchange="cmzImportData(event)">
+    </header>
+
+    <nav class="tabs" id="cmzTabs">
+      <button data-tab="dash" class="active"><i data-lucide="layout-dashboard"></i> ภาพรวม</button>
+      <button data-tab="jobs"><i data-lucide="clipboard-list"></i> ออเดอร์ลูกค้า</button>
+      <button data-tab="produce"><i data-lucide="flask-conical"></i> สั่งผลิต / ตัดสต็อก</button>
+      <button data-tab="stock"><i data-lucide="boxes"></i> วัตถุดิบคงเหลือ</button>
+      <button data-tab="formulas"><i data-lucide="beaker"></i> สูตร (BOM)</button>
+      <button data-tab="ledger"><i data-lucide="history"></i> ประวัติการตัด</button>
+      <button data-tab="settings"><i data-lucide="settings"></i> ตั้งค่า / ซิงค์</button>
+    </nav>
+
+    <main>
+      <section class="view active" id="view-dash">
+        <div class="hero">
+          <div class="hero-media">
+            <div style="width:100%;height:230px;border-radius:18px;background:linear-gradient(135deg,#e0e7ff,#c7d2fe);display:flex;align-items:center;justify-content:center;color:#6366f1;font-size:13px">CMZ Stock</div>
+          </div>
+          <div class="hero-body">
+            <div class="eyebrow">Stock Overview</div>
+            <h1 class="hero-title">ภาพรวมสต็อก</h1>
+            <p class="hero-lead">สรุปยอดคงเหลือ รายการที่ต้องสั่งซื้อ และความเคลื่อนไหวล่าสุด</p>
+            <div class="hero-stats" id="heroStats"></div>
+          </div>
+        </div>
+        <div class="kpis" id="kpis"></div>
+        <div class="card">
+          <h3><span class="ic warn"><i data-lucide="alert-triangle"></i></span> ต้องสั่งซื้อ <span class="tag">รายการที่ขาด หรือต่ำกว่าจุดสั่งซื้อ</span></h3>
+          <div id="reorderList"></div>
+        </div>
+        <div class="card">
+          <h3><span class="ic"><i data-lucide="activity"></i></span> การตัดล่าสุด</h3>
+          <div id="recentRuns"></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-jobs">
+        <h2 class="title">ออเดอร์ลูกค้า (Job Orders)</h2>
+        <p class="lead">งานที่ลูกค้าสั่งเข้ามา · ดูวันสั่ง วันกำหนดส่ง วันคงเหลือ และสถานะ · รองรับการทยอยส่ง (ส่งบางส่วน) และเชื่อมกับสูตรเพื่อตัดสต็อก</p>
+        <div class="job-kpis" id="jobKpis"></div>
+        <div class="card">
+          <h3><span class="ic gold"><i data-lucide="plus-circle"></i></span> เพิ่มออเดอร์ใหม่</h3>
+          <div class="grid cols-2">
+            <label class="fld"><span>ลูกค้า</span><input id="joCustomer" placeholder="เช่น JUNE / Dr.Mom / Venita"></label>
+            <label class="fld"><span>สินค้า</span><input id="joProduct" placeholder="เช่น สบู่มังคุด 100g"></label>
+          </div>
+          <div class="grid cols-2">
+            <label class="fld"><span>จำนวนสั่ง</span><input id="joQty" class="mono" type="number" placeholder="เช่น 10000"></label>
+            <label class="fld"><span>หน่วย</span><select id="joUnit"><option>ก้อน</option><option>ชิ้น</option><option>กระปุก</option><option>หลอด</option><option>ขวด</option><option>kg</option></select></label>
+          </div>
+          <div class="grid cols-2">
+            <label class="fld"><span>วันที่สั่ง</span><input id="joOrderDate" class="mono" type="date"></label>
+            <label class="fld"><span>วันกำหนดส่ง</span><input id="joDueDate" class="mono" type="date"></label>
+          </div>
+          <div class="grid cols-2">
+            <label class="fld"><span>สูตร (ไม่บังคับ — เชื่อมเพื่อตัดสต็อกได้)</span><select id="joFormula"></select></label>
+            <label class="fld"><span>หมายเหตุ</span><input id="joNote" placeholder="เช่น ห่อ+ตาข่าย+ใส่ซอง / ส่งก่อน 1000"></label>
+          </div>
+          <div class="row-actions">
+            <button class="act" onclick="cmzSaveJob()"><i data-lucide="save"></i> บันทึกออเดอร์</button>
+            <button class="ghost" onclick="cmzResetJobForm()">ล้างฟอร์ม</button>
+            <span class="hint" id="joEditHint" style="margin-top:0;align-self:center"></span>
+          </div>
+        </div>
+        <div class="card">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+            <input class="search" id="jobSearch" placeholder="ค้นหาลูกค้า / สินค้า..." oninput="cmzRenderJobs()" style="margin-bottom:0;flex:1;min-width:160px">
+            <select id="jobFilter" onchange="cmzRenderJobs()" style="max-width:180px">
+              <option value="all">ทุกสถานะ</option>
+              <option value="active">ยังไม่เสร็จ</option>
+              <option value="pending">รอผลิต</option>
+              <option value="producing">กำลังผลิต</option>
+              <option value="partial">ส่งบางส่วน</option>
+              <option value="done">ส่งครบแล้ว</option>
+            </select>
+            <select id="jobSort" onchange="cmzRenderJobs()" style="max-width:180px">
+              <option value="due">เรียงตามวันส่ง (ด่วนก่อน)</option>
+              <option value="order">เรียงตามวันสั่ง (ใหม่ก่อน)</option>
+              <option value="customer">เรียงตามลูกค้า</option>
+            </select>
+          </div>
+          <div id="jobList"></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-produce">
+        <h2 class="title">สั่งผลิต / ตัดสต็อก</h2>
+        <p class="lead">เลือกสูตร ใส่จำนวนผลิต → ระบบคูณ BOM แล้วแสดงว่าตัดแล้วเหลือเท่าไร / ขาดอะไร ก่อนยืนยันตัดจริง</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3><span class="ic gold"><i data-lucide="sliders-horizontal"></i></span> ตั้งค่ารอบผลิต</h3>
+            <label class="fld"><span>สูตร</span><select id="prodFormula" onchange="cmzRecalcRun()"></select></label>
+            <label class="fld"><span>จำนวนผลิต</span><input type="number" id="prodQty" class="mono" placeholder="เช่น 10000" oninput="cmzRecalcRun()"></label>
+            <label class="fld"><span>วันที่</span><input type="date" id="prodDate" class="mono"></label>
+            <label class="fld"><span>หมายเหตุ (ไม่บังคับ)</span><input type="text" id="prodNote" placeholder="เช่น ล็อตลูกค้า June"></label>
+            <div class="hint" id="batchHint"></div>
+          </div>
+          <div class="card">
+            <h3><span class="ic gold"><i data-lucide="calculator"></i></span> ผลการคำนวณ <span class="tag" id="runFormulaName"></span></h3>
+            <div id="runPreview"><div class="empty">เลือกสูตรและใส่จำนวนเพื่อดูผล</div></div>
+          </div>
+        </div>
+        <div style="margin-top:6px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <button class="act" id="confirmRunBtn" onclick="cmzConfirmRun()" disabled><i data-lucide="scissors"></i> ยืนยันตัดสต็อก</button>
+          <span class="hint" id="confirmHint" style="margin-top:0"></span>
+        </div>
+      </section>
+
+      <section class="view" id="view-stock">
+        <h2 class="title">วัตถุดิบคงเหลือ</h2>
+        <p class="lead">ยอดกลางของวัตถุดิบทุกตัว · แก้ไขยอดเมื่อรับของเข้า หรือปรับนับจริง</p>
+        <div class="card">
+          <h3><span class="ic gold"><i data-lucide="package-plus"></i></span> รับของเข้า / เพิ่มวัตถุดิบ</h3>
+          <div class="inline-add">
+            <label class="fld"><span>ชื่อวัตถุดิบ</span><input id="matName" placeholder="เช่น เบสใส / ซองสีส้ม"></label>
+            <label class="fld"><span>Supplier</span><input id="matSupplier" placeholder="เช่น เคมีภัณฑ์ไทย"></label>
+            <label class="fld" style="max-width:150px"><span>ประเภท</span><select id="matCat"><option value="raw">เนื้อ/สารเคมี</option><option value="pack">บรรจุภัณฑ์</option></select></label>
+            <label class="fld" style="max-width:104px"><span>จำนวน</span><input id="matQty" class="mono" type="number" placeholder="0"></label>
+            <label class="fld" style="max-width:92px"><span>หน่วย</span><select id="matUnit"><option>kg</option><option>g</option><option>ชิ้น</option><option>ซอง</option><option>ลัง</option><option>ใบ</option><option>ม้วน</option></select></label>
+            <label class="fld" style="max-width:120px"><span>ราคา/หน่วย (฿)</span><input id="matPrice" class="mono" type="number" placeholder="0"></label>
+            <label class="fld" style="max-width:110px"><span>จุดสั่งซื้อ</span><input id="matMin" class="mono" type="number" placeholder="0"></label>
+            <button class="act" onclick="cmzAddOrReceive()"><i data-lucide="plus"></i> บันทึก</button>
+          </div>
+          <div class="hint">ถ้ามีชื่อนี้อยู่แล้ว = บวกเข้ายอดเดิม (รับของ) · ถ้ายังไม่มี = สร้างใหม่ · จุดสั่งซื้อ = แจ้งเตือนเมื่อยอดต่ำกว่านี้</div>
+        </div>
+        <div class="card">
+          <input class="search" id="stockSearch" placeholder="ค้นหาวัตถุดิบ..." oninput="cmzRenderStock()">
+          <div id="stockTable"></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-formulas">
+        <h2 class="title">สูตร (BOM)</h2>
+        <p class="lead">แต่ละสูตรกำหนดวัตถุดิบและปริมาณต่อ "หน่วยฐาน" — เวลาผลิตจริงระบบจะคูณตามจำนวนให้</p>
+        <div class="card">
+          <h3><span class="ic gold"><i data-lucide="beaker"></i></span> สร้าง / แก้สูตร</h3>
+          <div class="grid cols-2">
+            <label class="fld"><span>ชื่อสูตร</span><input id="fName" placeholder="เช่น ชาวเขา"></label>
+            <label class="fld"><span>หน่วยฐาน (ผลิตเท่านี้แล้วใช้ปริมาณข้างล่าง)</span><input id="fBase" class="mono" type="number" placeholder="เช่น 10000"></label>
+          </div>
+          <div class="divider"></div>
+          <div style="font-size:12px;color:var(--ink-dim);margin-bottom:10px">วัตถุดิบในสูตร · เลือกวิธีคิดต่อรายการ:
+            <span style="color:var(--ink-faint)">ต่อหน่วยฐาน</span> = ปริมาณรวมต่อจำนวนฐาน ·
+            <span style="color:var(--ink-faint)">ต่อ 1 ชิ้น</span> = คูณจำนวนผลิตตรงๆ ·
+            <span style="color:var(--ink-faint)">กี่ชิ้น/หน่วย</span> = ผลิตกี่ชิ้นได้ 1 ลัง/กล่อง (ปัดขึ้น)</div>
+          <div id="bomRows"></div>
+          <button class="mini" onclick="cmzAddBomRow()" style="margin-top:6px">+ เพิ่มวัตถุดิบ</button>
+          <div class="divider"></div>
+          <div class="row-actions">
+            <button class="act" onclick="cmzSaveFormula()"><i data-lucide="save"></i> บันทึกสูตร</button>
+            <button class="ghost" onclick="cmzResetFormulaForm()">ล้างฟอร์ม</button>
+            <span class="hint" id="fEditHint" style="margin-top:0;align-self:center"></span>
+          </div>
+        </div>
+        <div class="card">
+          <h3><span class="ic"><i data-lucide="list"></i></span> สูตรทั้งหมด</h3>
+          <div id="formulaList"></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-ledger">
+        <h2 class="title">ประวัติการตัด (Ledger)</h2>
+        <p class="lead">ทุกรอบผลิตที่ตัดสต็อก เรียงจากใหม่ไปเก่า · กดดูรายละเอียดวัตถุดิบที่ถูกตัด · ย้อนรายการได้</p>
+        <div id="ledgerList"></div>
+      </section>
+
+      <section class="view" id="view-settings">
+        <h2 class="title">ตั้งค่า / ซิงค์ Google Sheets</h2>
+        <p class="lead">เชื่อมระบบกับ Google Sheet เพื่อให้หลายเครื่องเห็นข้อมูลชุดเดียวกัน · ข้อมูลยังเซฟในเครื่องเสมอ และซิงค์ขึ้น Sheet อัตโนมัติเมื่อมีการแก้ไข</p>
+
+        <div class="card" style="border-left:4px solid var(--gold)">
+          <h3><span class="ic gold"><i data-lucide="link"></i></span> เชื่อม Google Sheet</h3>
+          <label class="fld"><span>Apps Script Web App URL <span style="color:var(--ink-faint)">(ดูวิธีรับ URL ด้านล่าง)</span></span>
+            <input id="cfgSheetUrl" placeholder="https://script.google.com/macros/s/AKfyc.../exec"></label>
+          <label class="fld"><span>รหัสลับ <span style="color:var(--ink-faint)">(ไม่บังคับ — ล็อกชั้นที่สอง ต้องตรงกับในโค้ด Apps Script)</span></span>
+            <input id="cfgSecret" placeholder="เช่น cmz-2026-x9k2 (ตั้งเองอะไรก็ได้)"></label>
+          <label style="display:flex;align-items:center;gap:9px;margin-bottom:14px;cursor:pointer;font-size:13.5px">
+            <input type="checkbox" id="cfgAutoSync" checked style="width:auto"> ซิงค์อัตโนมัติทุกครั้งที่มีการแก้ไข
+          </label>
+          <div class="row-actions">
+            <button class="act" onclick="cmzSaveSheetCfg()"><i data-lucide="save"></i> บันทึก & ทดสอบเชื่อมต่อ</button>
+            <button class="ghost" onclick="cmzManualPull()"><i data-lucide="cloud"></i> ดึงจาก Sheet</button>
+            <button class="ghost" onclick="cmzManualPush()"><i data-lucide="upload"></i> ส่งขึ้น Sheet</button>
+          </div>
+          <div class="hint" id="cfgStatus" style="margin-top:12px"></div>
+        </div>
+
+        <div class="card">
+          <h3><span class="ic"><i data-lucide="list"></i></span> วิธีตั้งค่า (ทำครั้งเดียว ~5 นาที)</h3>
+          <div class="setup-steps" id="setupSteps"></div>
+        </div>
+
+        <div class="card" style="background:var(--warn-bg);border-color:var(--warn)">
+          <h3><span class="ic warn"><i data-lucide="alert-triangle"></i></span> ข้อควรรู้</h3>
+          <ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.9;color:var(--ink)">
+            <li>Google Sheets เหมาะกับทีมเล็ก–กลาง ที่ไม่ได้แก้ข้อมูลพร้อมกันหลายคนตลอดเวลา</li>
+            <li>ถ้า 2 คนแก้พร้อมกัน คนที่เซฟทีหลังจะทับของคนแรก (last-write-wins) — แนะนำให้ตกลงกันว่าใครดูแลส่วนไหน</li>
+            <li>ข้อมูลเซฟในเครื่องเสมอ ถ้าเน็ตหลุดยังใช้งานต่อได้ พอเน็ตกลับมากด"ส่งขึ้น Sheet" เพื่อซิงค์</li>
+            <li>กด"ส่งออก" เก็บไฟล์ JSON สำรองเป็นระยะ เผื่อกู้คืน</li>
+            <li>ถ้าทีมโตขึ้นมาก แนะนำขยับไป Supabase (database จริง รองรับหลายคนพร้อมกัน) — บอกผมได้</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+    <div class="toast" id="cmzToast"></div>
+  </div>
+<script>
+const LUCIDE_ICONS = {"package-2":"<path d=\"M3 9l9-5 9 5v6l-9 5-9-5z\"/><path d=\"M3 9l9 5 9-5\"/><path d=\"M12 14v6\"/>","download":"<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/>","upload":"<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"17 8 12 3 7 8\"/><line x1=\"12\" y1=\"3\" x2=\"12\" y2=\"15\"/>","layout-dashboard":"<rect x=\"3\" y=\"3\" width=\"7\" height=\"9\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"5\"/><rect x=\"14\" y=\"12\" width=\"7\" height=\"9\"/><rect x=\"3\" y=\"16\" width=\"7\" height=\"5\"/>","flask-conical":"<path d=\"M10 2v7.31l-5.5 9.5A2 2 0 0 0 6.2 22h11.6a2 2 0 0 0 1.7-3.19L14 9.31V2\"/><path d=\"M8.5 2h7\"/><path d=\"M7 16h10\"/>","boxes":"<path d=\"M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 1.03 1.75l3 1.65a2 2 0 0 0 1.94 0L10 20v-4.5\"/><path d=\"m7 16.5-4.74-2.85\"/><path d=\"m7 16.5 4.74-2.85\"/><path d=\"M7 16.5v5.17\"/><path d=\"M14 12.92a2 2 0 0 0-.97 1.71v3.24a2 2 0 0 0 1.03 1.75l3 1.65a2 2 0 0 0 1.94 0l3-1.65a2 2 0 0 0 1.03-1.75v-3.24a2 2 0 0 0-.97-1.71\"/><path d=\"m17 16.5-4.74-2.85\"/><path d=\"m17 16.5 4.74-2.85\"/><path d=\"M17 16.5v5.17\"/><path d=\"M7.97 4.42A2 2 0 0 0 7 6.13v3.24a2 2 0 0 0 1.03 1.75l3 1.65a2 2 0 0 0 1.94 0l3-1.65A2 2 0 0 0 17 9.37V6.13a2 2 0 0 0-.97-1.71l-3-1.65a2 2 0 0 0-1.94 0z\"/><path d=\"M12 8 7.26 5.15\"/><path d=\"m12 8 4.74-2.85\"/><path d=\"M12 13.5V8\"/>","beaker":"<path d=\"M4.5 3h15\"/><path d=\"M6 3v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3\"/><path d=\"M6 14h12\"/>","history":"<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><path d=\"M3 3v5h5\"/><path d=\"M12 7v5l4 2\"/>","alert-triangle":"<path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z\"/><path d=\"M12 9v4\"/><path d=\"M12 17h.01\"/>","activity":"<path d=\"M22 12h-4l-3 9L9 3l-3 9H2\"/>","sliders-horizontal":"<line x1=\"21\" x2=\"14\" y1=\"4\" y2=\"4\"/><line x1=\"10\" x2=\"3\" y1=\"4\" y2=\"4\"/><line x1=\"21\" x2=\"12\" y1=\"12\" y2=\"12\"/><line x1=\"8\" x2=\"3\" y1=\"12\" y2=\"12\"/><line x1=\"21\" x2=\"16\" y1=\"20\" y2=\"20\"/><line x1=\"12\" x2=\"3\" y1=\"20\" y2=\"20\"/><line x1=\"14\" x2=\"14\" y1=\"2\" y2=\"6\"/><line x1=\"8\" x2=\"8\" y1=\"10\" y2=\"14\"/><line x1=\"16\" x2=\"16\" y1=\"18\" y2=\"22\"/>","calculator":"<rect width=\"16\" height=\"20\" x=\"4\" y=\"2\" rx=\"2\"/><line x1=\"8\" x2=\"16\" y1=\"6\" y2=\"6\"/><line x1=\"16\" x2=\"16\" y1=\"14\" y2=\"18\"/><path d=\"M16 10h.01\"/><path d=\"M12 10h.01\"/><path d=\"M8 10h.01\"/><path d=\"M12 14h.01\"/><path d=\"M8 14h.01\"/><path d=\"M12 18h.01\"/><path d=\"M8 18h.01\"/>","scissors":"<circle cx=\"6\" cy=\"6\" r=\"3\"/><path d=\"M8.12 8.12 12 12\"/><path d=\"M20 4 8.12 15.88\"/><circle cx=\"6\" cy=\"18\" r=\"3\"/><path d=\"M14.8 14.8 20 20\"/>","package-plus":"<path d=\"M16 16h6\"/><path d=\"M19 13v6\"/><path d=\"M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0\"/><path d=\"M3.29 7 12 12l8.71-5\"/><path d=\"M12 22V12\"/>","plus":"<path d=\"M5 12h14\"/><path d=\"M12 5v14\"/>","save":"<path d=\"M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z\"/><path d=\"M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7\"/><path d=\"M7 3v4a1 1 0 0 0 1 1h7\"/>","list":"<path d=\"M3 12h.01\"/><path d=\"M3 18h.01\"/><path d=\"M3 6h.01\"/><path d=\"M8 12h13\"/><path d=\"M8 18h13\"/><path d=\"M8 6h13\"/>","box":"<path d=\"M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z\"/><path d=\"m3.3 7 8.7 5 8.7-5\"/><path d=\"M12 22V12\"/>","check":"<path d=\"M20 6 9 17l-5-5\"/>","check-circle-2":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m9 12 2 2 4-4\"/>","chevron-right":"<path d=\"m9 18 6-6-6-6\"/>","clipboard-list":"<rect width=\"8\" height=\"4\" x=\"8\" y=\"2\" rx=\"1\" ry=\"1\"/><path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\"/><path d=\"M12 11h4\"/><path d=\"M12 16h4\"/><path d=\"M8 11h.01\"/><path d=\"M8 16h.01\"/>","plus-circle":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M8 12h8\"/><path d=\"M12 8v8\"/>","truck":"<path d=\"M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2\"/><path d=\"M15 18H9\"/><path d=\"M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14\"/><circle cx=\"17\" cy=\"18\" r=\"2\"/><circle cx=\"7\" cy=\"18\" r=\"2\"/>","calendar-clock":"<path d=\"M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5\"/><path d=\"M16 2v4\"/><path d=\"M8 2v4\"/><path d=\"M3 10h5\"/><circle cx=\"17\" cy=\"17\" r=\"5\"/><path d=\"M17 14.5v2.5l1.5 1\"/>","package-check":"<path d=\"m16 16 2 2 4-4\"/><path d=\"M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14\"/><path d=\"M3.29 7 12 12l8.71-5\"/><path d=\"M12 22V12\"/>","trash-2":"<path d=\"M3 6h18\"/><path d=\"M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2\"/><line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"17\"/><line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"17\"/>","settings":"<path d=\"M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","cloud":"<path d=\"M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z\"/>","cloud-off":"<path d=\"m2 2 20 20\"/><path d=\"M5.782 5.782A7 7 0 0 0 9 19h8.5a4.5 4.5 0 0 0 1.307-.193\"/><path d=\"M21.532 16.5A4.5 4.5 0 0 0 17.5 10h-1.79A7.008 7.008 0 0 0 10 5.07\"/>","hard-drive":"<line x1=\"22\" x2=\"2\" y1=\"12\" y2=\"12\"/><path d=\"M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z\"/><line x1=\"6\" x2=\"6.01\" y1=\"16\" y2=\"16\"/><line x1=\"10\" x2=\"10.01\" y1=\"16\" y2=\"16\"/>","refresh-cw":"<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\"/><path d=\"M21 3v5h-5\"/><path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\"/><path d=\"M3 21v-5h5\"/>","link":"<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\"/><path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\"/>"};
+function svgFor(name){ const p=LUCIDE_ICONS[name]; if(!p) return ""; return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>'; }
+function renderIcons(root){ (root||document).querySelectorAll("i[data-lucide]").forEach(el=>{ const n=el.getAttribute("data-lucide"); const svg=svgFor(n); if(svg){ el.innerHTML=svg; el.setAttribute("data-done","1"); } }); }
+
+    let DB = { materials:{}, formulas:{}, ledger:[], orders:{}, jobs:[], _v:3 };
+    let editingFormula = null;
+
+    /* ===== Google Sheets sync config ===== */
+    const CFG_KEY = 'cmz_cfg';
+    let CFG = { sheetUrl:'', secret:'', autoSync:true };
+    let syncState = 'local'; // local | syncing | synced | error
+    let syncTimer = null;
+
+    function loadCfg(){
+      try{ const v=localStorage.getItem(CFG_KEY); if(v) CFG=Object.assign(CFG,JSON.parse(v)); }catch(e){}
+    }
+    function saveCfg(){ try{ localStorage.setItem(CFG_KEY, JSON.stringify(CFG)); }catch(e){} }
+
+    const storage = {
+      async get(k){
+        try{ if(window.storage && window.storage.get){ return await window.storage.get(k); } }catch(e){}
+        const v = localStorage.getItem(k); return v ? {value:v} : null;
+      },
+      async set(k,v){
+        try{ if(window.storage && window.storage.set){ return await window.storage.set(k,v); } }catch(e){}
+        localStorage.setItem(k,v);
+      }
+    };
+
+    /* ดึงข้อมูลจาก Google Sheet — คืน null ถ้า Sheet ว่าง (ไม่ใช่ error) */
+    async function sheetPull(){
+      if(!CFG.sheetUrl) throw new Error('ยังไม่ได้ตั้งค่า URL');
+      const sec = CFG.secret ? '&key='+encodeURIComponent(CFG.secret) : '';
+      const res = await fetch(CFG.sheetUrl+'?action=get&t='+Date.now()+sec);
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const j = await res.json();
+      if(j && j.ok){ return j.data || null; }  // data อาจเป็น null = Sheet ว่าง
+      throw new Error(j && j.error ? j.error : 'รูปแบบข้อมูลไม่ถูกต้อง');
+    }
+    /* ส่งข้อมูลขึ้น Google Sheet */
+    async function sheetPush(data){
+      if(!CFG.sheetUrl) throw new Error('ยังไม่ได้ตั้งค่า URL');
+      const res = await fetch(CFG.sheetUrl, {
+        method:'POST',
+        // text/plain เลี่ยง CORS preflight กับ Apps Script
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify({ action:'set', key:CFG.secret||'', data })
+      });
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const j = await res.json();
+      if(!(j && j.ok)) throw new Error(j && j.error ? j.error : 'บันทึกไม่สำเร็จ');
+      return true;
+    }
+    function setSyncState(s,msg){
+      syncState=s;
+      const el=$('syncBadge'); if(!el) return;
+      const map={
+        local:['<i data-lucide="hard-drive"></i> เก็บในเครื่อง','badge-local'],
+        syncing:['<i data-lucide="refresh-cw"></i> กำลังซิงค์...','badge-sync'],
+        synced:['<i data-lucide="cloud"></i> ซิงค์แล้ว','badge-ok'],
+        error:['<i data-lucide="cloud-off"></i> ซิงค์ไม่สำเร็จ','badge-err']
+      };
+      const [t,c]=map[s]||map.local;
+      el.className='sync-badge '+c; el.innerHTML=t+(msg?' <span style="opacity:.7">· '+msg+'</span>':'');
+      LU();
+    }
+    const LU = ()=>{ try{ renderIcons(); }catch(e){} };
+    const tw = (h)=> '<div class="tw">'+h+'</div>';
+    const $ = (id)=> document.getElementById(id);
+
+    async function load(){
+      loadCfg();
+      // ถ้าตั้งค่า Sheet ไว้ ลองดึงจาก Sheet ก่อน
+      if(CFG.sheetUrl){
+        try{
+          setSyncState('syncing');
+          const data = await sheetPull();
+          if(data && data.materials){ DB=data; migrate(); await storage.set('cmz_db', JSON.stringify(DB)); setSyncState('synced'); return; }
+          // Sheet ว่าง → ใช้ local แล้ว push ขึ้นไป
+        }catch(e){ setSyncState('error', e.message); }
+      }
+      try{ const r = await storage.get('cmz_db');
+        if(r && r.value){ DB = JSON.parse(r.value); migrate(); }
+        else { seed(); }
+      }catch(e){ seed(); }
+      await storage.set('cmz_db', JSON.stringify(DB));
+      // มี Sheet แต่ Sheet ว่าง → push ข้อมูลตั้งต้นขึ้นไป
+      if(CFG.sheetUrl && syncState!=='synced'){ scheduleSync(); }
+    }
+    function migrate(){
+      Object.values(DB.materials).forEach(m=>{
+        if(!m.cat) m.cat='raw';
+        if(m.price==null) m.price=0;
+        if(m.supplier==null) m.supplier='';
+        // ฟิลด์ stock card ใหม่
+        if(m.code==null) m.code=m.name||'';
+        if(m.name==null) m.name=m.code||'';
+        if(m.itemType==null) m.itemType=(m.cat==='pack'?'PA':'RM');
+        if(m.category==null) m.category='';
+        if(m.max==null) m.max=0;
+        if(m.reorder==null) m.reorder=0;
+        if(m.location==null) m.location='';
+        if(m.barcode==null) m.barcode='';
+        if(m.tradeName==null) m.tradeName='';
+        if(m.inci==null) m.inci='';
+        if(m.cas==null) m.cas='';
+        if(m.kind==null) m.kind=m.cat||'raw';
+      });
+      Object.values(DB.formulas).forEach(f=>{ f.items.forEach(it=>{ if(!it.per) it.per='unit'; }); });
+      if(!DB.orders) DB.orders={};
+      if(!DB.jobs) DB.jobs=[];
+      if(!DB.pos) DB.pos=[];
+      if(!DB.reservations) DB.reservations=[];
+      if(!DB.movements) DB.movements=[];
+      if(!DB._v || DB._v<4) DB._v=4;
+    }
+    async function save(){
+      // 1) เซฟ local ทันที (เร็ว ไม่พลาด)
+      try{ await storage.set('cmz_db', JSON.stringify(DB)); }
+      catch(e){ toast('บันทึกในเครื่องไม่สำเร็จ: '+e.message,'err'); }
+      // 2) ซิงค์ขึ้น Sheet แบบหน่วง (รวมหลายการแก้ในครั้งเดียว)
+      if(CFG.sheetUrl && CFG.autoSync) scheduleSync();
+    }
+    function scheduleSync(){
+      clearTimeout(syncTimer);
+      syncTimer=setTimeout(doSync, 1200);
+    }
+    async function doSync(){
+      if(!CFG.sheetUrl) return;
+      try{
+        setSyncState('syncing');
+        await sheetPush(DB);
+        setSyncState('synced');
+      }catch(e){ setSyncState('error', e.message); }
+    }
+    async function manualPull(){
+      if(!CFG.sheetUrl){ toast('ยังไม่ได้ตั้งค่า Google Sheet','err'); return; }
+      if(!confirm('ดึงข้อมูลล่าสุดจาก Google Sheet มาแทนที่ข้อมูลในเครื่อง?\\n(การแก้ที่ยังไม่ได้ซิงค์จะหายไป)')) return;
+      try{
+        setSyncState('syncing');
+        const data=await sheetPull();
+        if(data && data.materials){ DB=data; migrate(); await storage.set('cmz_db', JSON.stringify(DB)); renderAll(); setSyncState('synced'); toast('ดึงข้อมูลจาก Sheet แล้ว','ok'); }
+        else throw new Error('Sheet ว่างหรือข้อมูลไม่ถูกต้อง');
+      }catch(e){ setSyncState('error', e.message); toast('ดึงไม่สำเร็จ: '+e.message,'err'); }
+    }
+    async function manualPush(){
+      if(!CFG.sheetUrl){ toast('ยังไม่ได้ตั้งค่า Google Sheet','err'); return; }
+      try{ setSyncState('syncing'); await sheetPush(DB); setSyncState('synced'); toast('ส่งข้อมูลขึ้น Sheet แล้ว','ok'); }
+      catch(e){ setSyncState('error', e.message); toast('ส่งไม่สำเร็จ: '+e.message,'err'); }
+    }
+    async function saveSheetCfg(){
+      const url=$('cfgSheetUrl').value.trim();
+      CFG.sheetUrl=url; CFG.secret=$('cfgSecret').value.trim(); CFG.autoSync=$('cfgAutoSync').checked; saveCfg();
+      if(url){
+        toast('บันทึกการตั้งค่าแล้ว — กำลังทดสอบการเชื่อมต่อ','ok');
+        try{ setSyncState('syncing'); const data=await sheetPull();
+          $('cfgStatus').innerHTML='<span style="color:var(--ok)">✓ เชื่อมต่อสำเร็จ</span>'+(data&&data.materials?' · พบข้อมูลใน Sheet':' · Sheet ว่าง (จะส่งข้อมูลปัจจุบันขึ้นไป)');
+          setSyncState('synced');
+          if(!(data&&data.materials)) await doSync();
+        }catch(e){ $('cfgStatus').innerHTML='<span style="color:var(--short)">✕ '+e.message+'</span>'; setSyncState('error',e.message); }
+      } else { setSyncState('local'); $('cfgStatus').textContent='ปิดการซิงค์ — เก็บในเครื่องอย่างเดียว'; }
+    }
+const STOCK_CARDS=[
+["DIL0010101","DL - ค่าแรงพนักงานประจำ","LABOR","Labor","วัน",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","labor"],
+["DIL0010102","DL - ค่าแรงพนักงานรายวัน","LABOR","Labor","วัน",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","labor"],
+["DIL0010103","DL - ค่าแรงพนักงานพาร์มไทม์","LABOR","Labor","วัน",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","labor"],
+["DIL0010104","DL - ค่าแรงพนักงานขนส่ง","LABOR","Labor","วัน",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","labor"],
+["FOB0010101","FG-OEM-BRAND CERAPURE-CERAPURE SOAP","FG","FG-BAR SOAP","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["FOB0010102","FG-OEM-BRAND CERAPURE-CERAPURE CERAPURE FOR KIDS SOAP BAR","FG","FG-BAR SOAP","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["FOB0010103","FG-OEM-BRAND CERAPURE-CERAPURE CLEANSING SOAP CLEAN&CARE","FG","FG-BAR SOAP","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["FOB0010104","FG-OEM-BRAND CERAPURE-CERAPURE IRIS BLOOMS SENSE SOAP","FG","FG-BAR SOAP","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["FOB0010105","FG-OEM-BRAND CERAPURE-CERAPURE MERRY MAGIC SOAP","FG","FG-LIQUID SOAP","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["FOB0010106","FG-OEM-BRAND CERAPURE-CERAPURE CLEANSING SOAP IRIS BLOOMS SENSE","FG","FG-BAR SOAP","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["FOB0010107","FG-OEM-BRAND CERAPURE-CERAPURE MERRY MAGIC BODY WASH","FG","FG-LIQUID SOAP","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["FOB0030101","FG-OEM-BRAND ZEBRA-ZEBRA WHITENING BOOSTER LOTION","FG","FG-CREAM","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["FOB0070101","FG-OEM-NO BRAND- BAR SOAP 30g","FG","FG-BAR SOAP","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["FOB0070102","FG-OEM-NO BRAND- BAR SOAP 70g","FG","FG-BAR SOAP","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["FOB0490101","FG-OEM-BRAND CHUPA CHUPS-TAKE AND CARE CHUPA CHUPS STRAWBERRY CREAM MULTIVITAMIN SOAP","FG","FG-BAR SOAP","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["FOB0490102","FG-OEM-BRAND CHUPA CHUPS-TAKE AND CARE CHUPA CHUPS WATERMELON MULTIVITAMIN SOAP","FG","FG-BAR SOAP","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["FOB0490103","FG-OEM-BRAND CHUPA CHUPS-TAKE AND CARE CHUPA CHUPS ORANGE MULTIVITAMIN SOAP","FG","FG-BAR SOAP","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["FOB0490104","FG-OEM-BRAND CHUPA CHUPS-TAKE AND CARE CHUPA CHUPS SWEETY PEACH MULTIVITAMIN SOAP","FG","FG-BAR SOAP","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["FOB0490105","FG-OEM-NO BRAND-OTHER CLAIM","FG","FG-BAR SOAP","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["FOB0930101","FG-OEM-BRAND-NANATHONG C&E SOAP 100G","FG","FG-BAR SOAP","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["FOB0930102","FG-OEM-BRAND-NANATHONG TAMARIND SOAP 100G","FG","FG-BAR SOAP","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["FOB1160101","FG-OEM-BRAND JUNE - JUNE OFFICIAL JUNE FRESH FEMININE CLEANSING PREMIUM SOAP 50g","FG","FG-BAR SOAP","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["FOB1560101","FG-OEM-BRAND BHAN BHAN-BHAN BHAN SOAP","FG","FG-BAR SOAP","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["FOB1760102","FG-OEM-BRAND DD SKIN-PEACH MINT SOAP","FG","FG-BAR SOAP","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","fg"],
+["OVH0010101","OH - Packing - ฟิล์มห่อสบู่ แบบขุ่น 185mm CPP/OPP","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,1400.0,"TER VARIN","","","","","","pack","pack"],
+["OVH0010102","OH - Packing - ฟิล์มห่อสบู่ แบบใส 185mm CPP/OPP","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,1400.0,"TER VARIN","","","","","","pack","pack"],
+["OVH0010103","OH - Packing - ฟิล์มห่อสบู่ แบบขุ่น 190mm CPP/OPP","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,1400.0,"TER VARIN","","","","","","pack","pack"],
+["OVH0010104","OH - Packing - ฟิล์มห่อสบู่ แบบใส 190mm CPP/OPP","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,1400.0,"TER VARIN","","","","","","pack","pack"],
+["OVH0010105","OH - Packing - ฟิล์มห่อสบู่ แบบขุ่น 200mm CPP/OPP","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,1400.0,"TER VARIN","","","","","","pack","pack"],
+["OVH0010106","OH - Packing - ฟิล์มห่อสบู่ แบบใส 200mm CPP/OPP","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,1400.0,"TER VARIN","","","","","","pack","pack"],
+["OVH0010201","OH - Packing - ฟิล์มชริ้งหด 19mm ธรรมดา","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,1500.0,"KMS","","","","","","pack","pack"],
+["OVH0010202","OH - Packing - ฟิล์มชริ้งหด 19mm คอสลิ้ง","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,2420.0,"KMS","","","","","","pack","pack"],
+["OVH0010203","OH - Packing - ฟิล์มชริ้งหด 30mm ธรรมดา","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,1500.0,"KMS","","","","","","pack","pack"],
+["OVH0010204","OH - Packing - ฟิล์มชริ้งหด 30mm คอสลิ้ง","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,2420.0,"KMS","","","","","","pack","pack"],
+["OVH0010205","OH - Packing - ฟิล์มยืดแรพสบู่ แรพเครื่อง","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,800.0,"KMS","","","","","","pack","pack"],
+["OVH0010206","OH - Packing - ฟิล์มชริ้งหด 25mm ธรรมดา","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,0.0,"KMS","","","","","","pack","pack"],
+["OVH0010207","OH - Packing - ฟิล์มชริ้งหด 25mm คอสลิ้ง","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,0.0,"KMS","","","","","","pack","pack"],
+["OVH0010301","OH - Packing - กล่องลูกฟูก 5 ชั้น /CMZ/ size : S : 78 ก้อน 24X37X14 CM","PA","PACKING","ชิ้น",0.0,0.0,0.0,0.0,13.0,"CENTER CONTAINER","","","","","","pack","pack"],
+["OVH0010302","OH - Packing - กล่องลูกฟูก 5 ชั้น /CMZ/  size : M : 168 ก้อน 30X35X30 CM","PA","PACKING","ชิ้น",0.0,0.0,0.0,0.0,20.0,"CENTER CONTAINER","","","","","","pack","pack"],
+["OVH0010303","OH - Packing - กล่องลูกฟูก 5 ชั้น /CMZ/  size : L : 234 ก้อน 30X48X33 CM","PA","PACKING","ชิ้น",0.0,0.0,0.0,0.0,25.0,"CENTER CONTAINER","","","","","","pack","pack"],
+["OVH0010304","OH - Packing - กล่องลูกฟูก 5 ชั้น /C-White/ สบู่ก้อน","PA","PACKING","ชิ้น",0.0,0.0,0.0,0.0,0.0,"CENTER CONTAINER","","","","","","pack","pack"],
+["OVH0010305","OH - Packing - กล่องลูกฟูก 5 ชั้น /SPA/ กล่องเบส recycle","PA","PACKING","ชิ้น",0.0,0.0,0.0,0.0,0.0,"IN HOUSE","","","","","","pack","pack"],
+["OVH0010401","OH - Packing - พลาสติกกันกระแทก","PA","PACKING","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0010402","OH - Packing - ม้วนแรพมือ (1 ลัง มี 6 ม้วน)","PA","PACKING","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0010403","OH - Packing - แผ่นกั้นกลาง พลาสติกพีพี ขนาด 6.7x6.9ซม. - ost oversea","PA","PACKING","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0010404","OH - Packing - แผ่นฟอยล์แก้ว 70 mm. ก้าน สีเงิน - เลิศไปกับคนสวย","PA","PACKING","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0010405","OH - Packing - พลาสติกกันกระแทก บับเบิ้ล","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0010406","OH - Packing - ถุงตาข่ายตีฟอง","PA","PACKING","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0010501","OH - Packing - สก้อตเทปแปะกล่องลูกฟูก","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0010502","OH - Packing - สก้อตเทปแปะตอนแรพสบู่","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0010503","OH - Packing - เทปสีส้ม 2 นิ้ว 100 หลา","PA","PACKING","ม้วน",0,0,0,0,0,"","","","","","","pack","pack"],
+["OVH0010504","OH - Packing - เทปสีเหลือง 2 นิ้ว 100 หลา","PA","PACKING","ม้วน",0,0,0,0,0,"","","","","","","pack","pack"],
+["OVH0010505","OH - Packing - เทปสีน้ำตาล 2 นิ้ว 100 หลา","PA","PACKING","ม้วน",0,0,0,0,0,"","","","","","","pack","pack"],
+["OVH0010506","OH - Packing - เทปใส 2 นิ้ว 100 หลา","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0010507","OH - Packing - เทปใส 1 นิ้ว","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0010508","OH - Packing - เทปใส 18 มม. 72 หลา","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0010509","OH - Packing - เทปใส 18 มม. 36 หลา","PA","PACKING","ม้วน",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0020101","OH - Package - กระปุก200ml/ครีมม้าลาย/ZEBRA/CREAM WHITE BLACK/200ml","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0020102","OH - Package - สติ้กเกอร์กระปุก200ml/ครีมม้าลาย/ZEBRA/CREAM WHITE BLACK/200ml","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0020103","OH - Package - สติ้กเกอร์ฝา200ml/ครีมม้าลาย/ZEBRA/CREAM WHITE BLACK/200ml","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0020104","OH - Package - ขวดพลาสติกพร้อมฝา250ml/เซรั่มทอง/ZEBRA/GOLD BODY SERUM/250ml","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0020105","OH - Package - สติ้กเกอร์ขวด250ml/เซรั่มทอง/ZEBRA/GOLD BODY SERUM/250ml","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030101","OH - Package - กล่องลูกฟูก/สบู่ก้อน/Chupa Chups","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030102","OH - Package - กล่องลูกฟูก/สบู่ก้อน/Chupa Chups","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030103","OH - Package - กล่องลูกฟูก/สบู่ก้อน/miss chuli","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030104","OH - Package - กล่องลูกฟูก/สบู่ก้อน/miss chuli","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030105","OH - Package - กล่องอินเนอร์/สบู่ก้อน/chupa chups","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030106","OH - Package - กล่องอินเนอร์/สบู่ก้อน/miss chuli","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030107","OH - Package - ซองสกรีน/สบู่ก้อน/Chupa Chups/แตงโม","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030108","OH - Package - ซองสกรีน/สบู่ก้อน/Chupa Chups/สตรอเบอรี่","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030109","OH - Package - ซองสกรีน/สบู่ก้อน/Chupa Chups/พีช","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030110","OH - Package - ซองสกรีน/สบู่ก้อน/Chupa Chups/ส้ม","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030111","OH - Package - ซองสกรีน/สบู่ก้อน/Miss Chuli/ส้มมะละกอ","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030112","OH - Package - ซองสกรีน/สบู่ก้อน/Miss Chuli/นมข้าว","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030113","OH - Package - ซองสกรีน/สบู่ก้อน/Miss Chuli/ขมิ้น","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030114","OH - Package - ซองสกรีน/สบู่ก้อน/Miss Chuli/มะขาม","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030115","OH - Package - แม่พิมพ์/บล็อค เข็มเพชร 9 สี - ซองรวม - Layout รวม","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030116","OH - Package - แม่พิมพ์/บล็อค เข็มเพชร 9 สี - ซองสตรอเบอร์รี่ - Layout แยก","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030117","OH - Package - Zebra/กระปุกครีม+ฝา/ ขนาด 250g บรรจุ 98 ชิ้น","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030118","OH - Package - Zebra/แผ่นฟอยเงิน/ ขนาด radius 70mm","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030119","OH - Package - Zebra/แผ่นกั้นกลาง/ ขนาด 6.7*6.9 cm","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030120","OH - Package - ซองสกรีนซีล3ด้านซิปบน/สบู่ก้อน/LUXBAY/BLUE/50g","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030121","OH - Package - ซองสกรีนซีล3ด้านซิปบน/สบู่ก้อน/JUNE/PINK GIRL/50g","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030122","OH - Package - ซองสกรีนซีล3ด้านซิปบนก้น/สบู่ก้อน/JUNE/PINK BOTTOM สครับก้น/50g","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030123","OH - Package - กล่องฝาเสียบ/สบู่ก้อน/KHUNMAI/VIT C/50g","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030124","OH - Package - กล่องฝาเสียบ/สบู่ก้อน/KHUNMAI/COFFEE AURA/50g","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030125","OH - Package - กล่องฝาเสียบ/สบู่ก้อน/KHUNMAI/SABAI SCRUB/50g","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030126","OH - Package - กล่องฝาเสียบ/สบู่ก้อน","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030127","OH - Package - กล่องสมุด/สบู่ก้อน","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0030128","OH - Package - กล่องลิ้นชัก/สบู่ก้อน","PK","PACKAGE","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","pack","pack"],
+["OVH0040101","OH - Mis - ถุงมือไซส์ S","OH","Overhead","แพค",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","oh"],
+["OVH0040102","OH - Mis - ถุงมือไซส์ M","OH","Overhead","แพค",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","oh"],
+["OVH0040103","OH - Mis - ถุงมือไซส์ L","OH","Overhead","แพค",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","oh"],
+["OVH0040104","OH - Mis - หมวกคลุมผม สีเขียว","OH","Overhead","แพค",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","oh"],
+["OVH0040105","OH - Mis - หมวกคลุมผม สีขาว","OH","Overhead","แพค",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","oh"],
+["OVH0040106","OH - Mis - หมวกคลุมผม สีฟ้า","OH","Overhead","แพค",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","oh"],
+["OVH0040107","OH - Mis - หมวกคลุมผม สีดำ","OH","Overhead","แพค",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","oh"],
+["OVH0050101","OH - Parts - น้ำยาลบหมึก","OH","Parts","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","oh"],
+["OVH0050102","OH - Parts - หมึกเครื่องยิง lot ตัวใหญ่ Easijet ยิงขวด","OH","Parts","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","oh"],
+["OVH0050103","OH - Parts - หมึกเครื่องยิง lot ตัวกลาง D Smart ห่อสบู่","OH","Parts","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","oh"],
+["OVH0050104","OH - Parts - หมึกเครื่องยิง lot ตัวเล็ก D Smart ยิงลอก","OH","Parts","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","oh"],
+["OVH0050105","OH - Parts - น้ำยาผสมหมึก MAKE UP","OH","Parts","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","oh"],
+["RAM0010101","RM - Soap Base - เบสใส V - spaandsoap","RM","Soap Base","kg",0.0,0.0,0.0,0.0,50.0,"SPAANDSOAP","","","Soap Base","Soap Base","","raw","raw"],
+["RAM0010102","RM - Soap Base - เบสขุ่น V - spaandsoap","RM","Soap Base","kg",0.0,0.0,0.0,0.0,60.0,"SPAANDSOAP","","","Soap Base","Soap Base","","raw","raw"],
+["RAM0010103","RM - Soap Base - เบสใส S - spaandsoap","RM","Soap Base","kg",0.0,0.0,0.0,0.0,80.0,"SPAANDSOAP","","","Soap Base","Soap Base","","raw","raw"],
+["RAM0010104","RM - Soap Base - เบสขุ่น S - spaandsoap","RM","Soap Base","kg",0.0,0.0,0.0,0.0,80.0,"SPAANDSOAP","","","Soap Base","Soap Base","","raw","raw"],
+["RAM0010105","RM - Soap Base - เบส","RM","Soap Base","kg",0.0,0.0,0.0,0.0,0.0,"SPAANDSOAP","","","Soap Base","Soap Base","","raw","raw"],
+["RAM0010201","RM - Soap Base - เบสใส - INDY SOAP","RM","Soap Base","kg",0,0,0,0,62.0,"INDY SOAP","","","Soap Base","Soap Base","","raw","raw"],
+["RAM0010202","RM - Soap Base - เบสขุ่น - INDY SOAP","RM","Soap Base","kg",0,0,0,0,62.0,"INDY SOAP","","","Soap Base","Soap Base","","raw","raw"],
+["RAM0010301","RM - Soap Base - เบสใส - LN COSSCI","RM","Soap Base","kg",0,0,0,0,60.0,"LN COSSCI","","","Soap Base","Soap Base","","raw","raw"],
+["RAM0020101","RM - Water Base - RO water 18.9 L","RM","Water Base","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0020102","RM - Water Base - RO water Machine","RM","Water Base","kg",0.0,0.0,0.0,0.0,1.0,"IN HOUSE","","","RO Water Base","RO Water Base","","raw","raw"],
+["RAM0030101","RM - Surfactant - ฟองน้ำ spa - spaandsoap","RM","Surfactant","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0030201","RM - Surfactant - ALS - EMAL AD26","RM","Surfactant","kg",0.0,0.0,0.0,0.0,61.0,"BBT CHEMICAL","","","ALS - LION","Ammonium Lauryl Sulfate","","raw","raw"],
+["RAM0030301","RM - Surfactant - COCA BETAIN - CAPB","RM","Surfactant","kg",0.0,0.0,0.0,0.0,0.0,"KC BKK","","","","Cocamidopropyl Betaine","","raw","raw"],
+["RAM0030401","RM - Surfactant - SLES28% - N8000","RM","Surfactant","kg",0.0,0.0,0.0,0.0,0.0,"KC BKK","","","","Sodium Lauryl Ether Sulfate","","raw","raw"],
+["RAM0030501","RM - Surfactant - SLES70% - N70","RM","Surfactant","kg",0.0,0.0,0.0,0.0,0.0,"KC BKK","","","","Sodium Lauryl Ether Sulfate","","raw","raw"],
+["RAM0030601","RM - Surfactant - SLS","RM","Surfactant","kg",0.0,0.0,0.0,0.0,0.0,"THE REAL THREE","","","SLS - Sulfopon 1630","Sodium Lauryl Sulfate","","raw","raw"],
+["RAM0030701","RM - Surfactant - SCS - Sodium Coco Sulfate","RM","Surfactant","kg",0.0,0.0,0.0,0.0,0.0,"KC BKK","","","","Sodium Coco Sulfate","","raw","raw"],
+["RAM0030801","RM - Surfactant - SCI - Babyfoam","RM","Surfactant","kg",0.0,0.0,0.0,0.0,0.0,"MYSKIN","","","","Sodium Cocoyl Isethionate","","raw","raw"],
+["RAM0040101","RM - Humectant - SORBITOL","RM","Humectant","kg",0.0,0.0,0.0,0.0,47.0,"BBT CHEMICAL","","","Sorbitol","Sorbitol","","raw","raw"],
+["RAM0040102","RM - Humectant - SORBITOL 70%","RM","Humectant","kg",0.0,0.0,0.0,0.0,0.0,"KC BKK","","","Sorbitol","Sorbitol","","raw","raw"],
+["RAM0040201","RM - Humectant - GLYCERIN","RM","Humectant","kg",0.0,0.0,0.0,0.0,60.0,"KC BKK","","","Glycerin","Glycerin","","raw","raw"],
+["RAM0050101","RM - Fragrance - IMPRESS - COFFEE K9460 (กลิ่นกาแฟ)","RM","Fragrance","kg",0,0,0,0,899.0,"IMPRESS","","","","","","raw","raw"],
+["RAM0050102","RM - Fragrance - IMPRESS - I13816 (ORANGE)","RM","Fragrance","kg",0,0,0,0,980.0,"IMPRESS","","","","","","raw","raw"],
+["RAM0050103","RM - Fragrance - IMPRESS - M2198 (ดอกปีป)","RM","Fragrance","kg",0,0,0,0,1259.0,"IMPRESS","","","","","","raw","raw"],
+["RAM0050104","RM - Fragrance - IMPRESS - J10592 (กลิ่นส้ม)","RM","Fragrance","kg",0,0,0,0,900.0,"IMPRESS","","","","","","raw","raw"],
+["RAM0050105","RM - Fragrance - IMPRESS - I14115 (PEACH)","RM","Fragrance","kg",0,0,0,0,990.0,"IMPRESS","","","","","","raw","raw"],
+["RAM0050106","RM - Fragrance - IMPRESS - I13783 (WATERMELON)","RM","Fragrance","kg",0,0,0,0,1050.0,"IMPRESS","","","","","","raw","raw"],
+["RAM0050201","RM - Fragrance - TCFF - SWEET FLORAL PREMIUM ใหม่","RM","Fragrance","kg",0.0,0.0,0.0,0.0,1300.0,"TCFF","","","","","","raw","raw"],
+["RAM0050202","RM - Fragrance - TCFF - SWEET FLORAL NORMAL เก่า","RM","Fragrance","kg",0.0,0.0,0.0,0.0,2090.0,"TCFF","","","","","","raw","raw"],
+["RAM0050203","RM - Fragrance - TCFF - FRUITY FLORAL","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"TCFF","","","","","","raw","raw"],
+["RAM0050204","RM - Fragrance - TCFF - ROSA MARGENTA","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"TCFF","","","","","","raw","raw"],
+["RAM0050205","RM - Fragrance - TCFF - OMNIA AMETHYSTE","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"TCFF","","","","","","raw","raw"],
+["RAM0050301","RM - Fragrance - DE ROMA - BURBERRY HER","RM","Fragrance","kg",0,0,0,0,1550.0,"DE ROMA","","","","","","raw","raw"],
+["RAM0050302","RM - Fragrance - DE ROMA - STRAWBERRY YOGURT","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"DE ROMA","","","","","","raw","raw"],
+["RAM0050303","RM - Fragrance - DE ROMA - JASMINE RICE","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"DE ROMA","","","","","","raw","raw"],
+["RAM0050401","RM - Fragrance - BUALUANG - CANDY KISS","RM","Fragrance","kg",0.0,0.0,0.0,0.0,2500.0,"BUALUANG","","","","","","raw","raw"],
+["RAM0050402","RM - Fragrance - BUALUANG - OMNIA AMETHYSTE","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"BUALUANG","","","","","","raw","raw"],
+["RAM0050403","RM - Fragrance - BUALUANG - KODOMO PINK","RM","Fragrance","kg",0,0,0,0,1500.0,"BUALUANG","","","","","","raw","raw"],
+["RAM0050501","RM - Fragrance - FRAGRANTIKA - PROTEX BLOSSOM","RM","Fragrance","kg",0,0,0,0,1580.0,"FRAGRANTIKA","","","","","","raw","raw"],
+["RAM0050502","RM - Fragrance - FRAGRANTIKA - OMNIA AMETHYSTE","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050503","RM - Fragrance - FRAGRANTIKA - JAMPEE จำปี","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050601","RM - Fragrance - FUMELAND - BOMSELL","RM","Fragrance","kg",0,0,0,0,2289.0,"FUMESLAND SCENTY","","","","","","raw","raw"],
+["RAM0050701","RM - Fragrance - HONG HUAT - ROSES 066","RM","Fragrance","kg",0.0,0.0,0.0,0.0,1594.0,"HONG HUAT","","","","","","raw","raw"],
+["RAM0050702","RM - Fragrance - HONG HUAT - MELON 0048 FRAG","RM","Fragrance","kg",0,0,0,0,696.0,"HONG HUAT","","","","","","raw","raw"],
+["RAM0050703","RM - Fragrance - HONG HUAT - MANGOSTEEN","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"HONG HUAT","","","","","","raw","raw"],
+["RAM0050704","RM - Fragrance - HONG HUAT - FRUIT MELON","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"HONG HUAT","","","","","","raw","raw"],
+["RAM0050705","RM - Fragrance - HONG HUAT - White Musc","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"HONG HUAT","","","","","","raw","raw"],
+["RAM0050706","RM - Fragrance - HONG HUAT - Muscofix","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"HONG HUAT","","","","","","raw","raw"],
+["RAM0050801","RM - Fragrance - AQUA KISS","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050802","RM - Fragrance - MILK RICE","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050803","RM - Fragrance - CUCUMBER MELON","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050804","RM - Fragrance - BABY PURPLE MILD : VIOLET BABY","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050805","RM - Fragrance - TANAKA D'LEAF","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050806","RM - Fragrance - TANAKA D'LEAF MOD.1","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050807","RM - Fragrance - MANGOSTEEN","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050808","RM - Fragrance - PINK CHIFFON","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050809","RM - Fragrance - PARROT GREEN","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050810","RM - Fragrance - EARL GREY","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050811","RM - Fragrance - PROTEX BLOSSOM","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050812","RM - Fragrance - FRUITY PEACH3 DM3-2298","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050813","RM - Fragrance - ROYAL JELLY DM3-2005","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050814","RM - Fragrance - MISS DIOR","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050815","RM - Fragrance - IDOLE","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050816","RM - Fragrance - SUGAR CARAL","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050817","RM - Fragrance - PEAR & FREESIA","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050818","RM - Fragrance - CLASSIC CHOLE","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050819","RM - Fragrance - BLUE AQUA","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050820","RM - Fragrance - SNOW WHITE","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050821","RM - Fragrance - BERRY CURRENT","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050822","RM - Fragrance - BABY PURPLE MILD 1","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050823","RM - Fragrance - ส้มบราซิล - ORANGE OIL COLD PRESSED FDA","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050824","RM - Fragrance - HHCP HONEY SUCKLE O 800G","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050825","RM - Fragrance - HHCP HONEY SUCKLE O 200G","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050826","RM - Fragrance - MALI 029 กลิ่น","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050827","RM - Fragrance - PURPLE MILD E2000119","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050828","RM - Fragrance - APPLE TRB","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050829","RM - Fragrance - KYOHO GRAPE","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050830","RM - Fragrance - COCONUT","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050831","RM - Fragrance - MILKY","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050832","RM - Fragrance - YUZU","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050833","RM - Fragrance - OCEAN ORCHID","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050834","RM - Fragrance - AUNCHAN","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050835","RM - Fragrance - BLACK COFA","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050836","RM - Fragrance - มะนาว","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050837","RM - Fragrance - CHOK OAT MILK","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050838","RM - Fragrance - มะละกอ","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050839","RM - Fragrance - สัปปะรด","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050840","RM - Fragrance - มะนาวทีซี","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050841","RM - Fragrance - มะขาม","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050842","RM - Fragrance - Avocado","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050843","RM - Fragrance - GREEN TEA O","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050844","RM - Fragrance - ตะไคร้หอม","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0050845","RM - Fragrance - ขนมหวาน","RM","Fragrance","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060101","RM - Color - BLUE - adinop","RM","Color Powder","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060102","RM - Color - ACID RED - adinop","RM","Color Powder","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060103","RM - Color - สีม่่วงผง - adinop","RM","Color Powder","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060104","RM - Color - สีชมพูผง - adinop","RM","Color Powder","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060105","RM - Color - สีเขียวแอปเปิ้ล 601328 - ไทยสงวน","RM","Color Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060201","RM - Color - สีดำ BLACK - TR3","RM","Color Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060202","RM - Color - สีชมพูผสมมาแล้วแบบผง - ชมพูCI - mild and soap","RM","Color Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060203","RM - Color - สีส้มผสมมาแล้วแบบน้ำ - mild and soap","RM","Color Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060204","RM - Color - สีแดงผสมมาแล้วแบบน้ำ - mild and soap","RM","Color Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060205","RM - Color - สีน้ำตาลผสมมาแล้วแบบน้ำ - mild and soap","RM","Color Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060301","RM - Color - สีม่วงน้ำ - ผสมเอง","RM","Color","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060302","RM - Color - สีชมพูน้ำ - ผสมเอง","RM","Color","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060303","RM - Color - สีแดงน้ำ - ผสมเอง","RM","Color","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060304","RM - Color - สีเหลืองน้ำ - ผสมเอง","RM","Color","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060305","RM - Color - สีดำ ละลายน้ำ - ผสมเอง","RM","Color","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060306","RM - Color - สีน้ำตาลน้ำ - ผสมเอง","RM","Color","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060401","RM - Color - Glitter White","RM","Color Powder","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060402","RM - Color - GOLD MICA - ไมก้าทอง","RM","Color Powder","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060403","RM - Color - SILVER MICA - ไมก้าเงิน","RM","Color Powder","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060404","RM - Color - WHITE PEARL MICA - ไมก้าขาวมุก","RM","Color Powder","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060501","RM - Color - ทองแผ่นเล็ก","RM","Color Powder","แผ่น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060502","RM - Color - ทองแผ่นกลาง","RM","Color Powder","แผ่น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0060503","RM - Color - ทองแผ่นใหญ่ 9cm*9cm","RM","Color Powder","แผ่น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0070101","RM - Solvent - 1,3 PROPANEDIOL - myskin","RM","Solvent","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0070201","RM - Solvent - BUTYLENE GLYCOL","RM","Solvent","kg",0.0,0.0,0.0,0.0,240.0,"THE REAL THREE","","","","","","raw","raw"],
+["RAM0070301","RM - Solvent - PROPYLENE GLYCOL","RM","Solvent","kg",0.0,0.0,0.0,0.0,75.0,"BBT CHEMICAL","","","","","","raw","raw"],
+["RAM0070401","RM - Solvent - ALCOHOL DEB95 ETHOL I (BITREX)","RM","Solvent","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0070204","RM - Solvent - ALCOHOL ถังสีดำ","RM","Solvent","kg",0.0,0.0,0.0,0.0,70.0,"BBT CHEMICAL","","","","","","raw","raw"],
+["RAM0080101","RM - Oil - COCONUT OIL","RM","Oil","kg",0.0,0.0,0.0,0.0,110.0,"LOTUS","","","","","","raw","raw"],
+["RAM0080201","RM - Oil - PALM KERNEL OIL","RM","Oil","kg",0.0,0.0,0.0,0.0,75.0,"LOTUS","","","","","","raw","raw"],
+["RAM0080301","RM - Oil - SUNFLOWER OIL","RM","Oil","kg",0.0,0.0,0.0,0.0,80.0,"LOTUS","","","","","","raw","raw"],
+["RAM0080401","RM - Oil - CASTOR OIL","RM","Oil","kg",0.0,0.0,0.0,0.0,126.0,"BBT CHEMICAL","","","","","","raw","raw"],
+["RAM0080501","RM - Oil - RICE BRAN OIL","RM","Oil","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0080601","RM - Oil - CANOLA OIL","RM","Oil","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0080701","RM - Oil - OLIVE OIL","RM","Oil","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0080801","RM - Oil - CAMELIA SEED OIL","RM","Oil","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0080901","RM - Oil - Mineral Oil White Oil","RM","Oil","kg",0.0,0.0,0.0,0.0,60.0,"BBT CHEMICAL","","","White Oil","","","raw","raw"],
+["RAM0081001","RM - Oil - Stearic acid","RM","Oil","kg",0,0,0,0,110.0,"THE REAL THREE","","","EDENOR ST 1 MY BD (Stearic Acid)","","","raw","raw"],
+["RAM0090101","RM - Silicone - CYCLOPENTASILOXANE","RM","Silicone","kg",0.0,0.0,0.0,0.0,220.0,"MYSKIN","","","","","","raw","raw"],
+["RAM0100101","RM - Ester - ISODODECANE (JAPAN)","RM","Ester","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0100102","RM - Ester - ISODODECANE (GERMANY)","RM","Ester","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0110101","RM - Preservative - PHENOXYETHANOL","RM","Preservative","kg",0.0,0.0,0.0,0.0,0.0,"KC BKK","","","","","","raw","raw"],
+["RAM0110201","RM - Preservative - MILD PRESERVATIVE","RM","Preservative","kg",0.0,0.0,0.0,0.0,990.0,"MYSKIN","","","","","","raw","raw"],
+["RAM0120101","RM- Thickener - ARISTROFLEX AVC - kc bkk","RM","Thickener","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0120102","RM- Thickener - ARISTROFLEX AVC - myskin","RM","Thickener","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0120201","RM- Thickener - CARBOMER 940","RM","Thickener","kg",0.0,0.0,0.0,0.0,650.0,"THE REAL THREE","","","","","","raw","raw"],
+["RAM0120301","RM- Thickener - CARBOMER U10","RM","Thickener","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0120401","RM- Thickener - CARBOMER U21","RM","Thickener","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0120501","RM- Thickener - CARBOMER U30","RM","Thickener","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0120601","RM- Thickener - SEPIMAX ZEN","RM","Thickener","kg",0.0,0.0,0.0,0.0,4500.0,"THE REAL THREE","","","","","","raw","raw"],
+["RAM0120701","RM- Thickener - SEPIPLUS 400","RM","Thickener","kg",0.0,0.0,0.0,0.0,2795.0,"MYSKIN","","","","","","raw","raw"],
+["RAM0120801","RM- Thickener - SEPINOV EMT10","RM","Thickener","kg",0,0,0,0,4000.0,"THE REAL THREE","","","","","","raw","raw"],
+["RAM0120901","RM- Thickener - CLIMCO 121","RM","Thickener","kg",0.0,0.0,0.0,0.0,450.0,"THE REAL THREE","","","","","","raw","raw"],
+["RAM0121001","RM- Thickener - CLIMCO 631","RM","Thickener","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0121101","RM- Thickener - TINOVIS","RM","Thickener","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0121201","RM- Thickener - เกลือฝุ่น เกลือสปาผง","RM","Thickener","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0121301","RM- Thickener - เกลือข้นแห้ง เกลือเม็ดใหญ่","RM","Thickener","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0121401","RM- Thickener - HEC","RM","Thickener","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0121501","RM- Thickener - EDTA 2 NA","RM","Thickener","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0121601","RM- Thickener - หัวมุกสบู่เหลว - หัวมุก","RM","Thickener","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0130101","RM - A Powder - NIACINAMIDE - B3","RM","Active Powder","kg",0.0,0.0,0.0,0.0,310.0,"WATER DOCTER","","","","","","raw","raw"],
+["RAM0130201","RM - A Powder - TXC Tranexamic acid","RM","Active Powder","kg",0,0,0,0,4000.0,"THE REAL THREE","","","","Tranexamic acid","","raw","raw"],
+["RAM0130301","RM - A Powder - MENTOL","RM","Active Powder","kg",0.0,0.0,0.0,0.0,795.0,"BBT CHEMICAL","","","","","","raw","raw"],
+["RAM0130401","RM - A Powder - SALICYLIC ACID - BHA","RM","Active Powder","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0130501","RM - A Powder - TITANIUM DIOXIDE","RM","Active Powder","kg",0.0,0.0,0.0,0.0,100.0,"THE REAL THREE","","","Titanium Dioxide","Titanium Dioxide","","raw","raw"],
+["RAM0130502","RM - A Powder - TITANIUM DIOXIDE 200nm","RM","Active Powder","kg",0.0,0.0,0.0,0.0,2295.0,"MYSKIN","","","Titanium Dioxide 200nm EasyDisperse™","Titanium dioxide (and) Silica (and) Dimethicone","","raw","raw"],
+["RAM0130601","RM - A Powder - KOJIC ACID","RM","Active Powder","kg",0,0,0,0,2500.0,"THE REAL THREE","","","","Kojic Acid","","raw","raw"],
+["RAM0130701","RM - A Powder - PANTHENOL - B5","RM","Active Powder","kg",0.0,0.0,0.0,0.0,1890.0,"KC BKK","","","","","","raw","raw"],
+["RAM0130801","RM - A Powder - TANAKA POWDER - ทานาคา","RM","Active Powder","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0130901","RM - A Powder - TURMERIC POWDER - ขมิ้นไทย เหลืองจัด - ดีดี ไทย","RM","Active Powder","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0131001","RM - A Powder - CERAMIDE - เซราไมด์","RM","Active Powder","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0131101","RM - A Powder - ASCORBIC ACID - VitC","RM","Active Powder","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0131201","RM - A Powder - ALPHA ARBUTIN","RM","Active Powder","kg",0,0,0,0,80000.0,"MYSKIN","","","","","","raw","raw"],
+["RAM01401","RM - A Liquid - Aloe Vera Extract - ว่าน","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01402","RM - A Liquid - Pennyworth Extract - ใบบัวบก","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01403","RM - A Liquid - D-PANTHENOL - B5","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,1300.0,"THE REAL THREE","","","","","","raw","raw"],
+["RAM01404","RM - A Liquid - HYALURON - 8MO","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01405","RM - A Liquid - WITCH HAZEL วิซ ฮาเซล - kc bkk","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01406","RM - A Liquid - Triethanolamine - TEA","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,65.0,"BBT CHEMICAL","","","","","","raw","raw"],
+["RAM01407","RM - A Liquid - MANGOSTEEN EXTRACT - สารสกัดมังคุด","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01408","RM - A Liquid - Vitamin E - วิตามิน อี","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01409","RM - A Liquid - MANGOSTEEN PEEL EXTRACT - สารสกัดเปลือกมังคุด","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01410","RM - A Liquid - GINSENG EXTRACT - สารสกัดโสม","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01411","RM - A Liquid - BERRY COMPLEX EXTRACT - สารสกัดรวมเบอร์รี่","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01412","RM - A Liquid - PAPAYA EXTRACT - สารสกัดมะละกอ","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01413","RM - A Liquid - CENTELLA EXTRACT ใบบัวบก - onimax","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01414","RM - A Liquid - ALOE VERA EXTRACT ว่านหาง - onimax","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01415","RM - A Liquid - CUCUMBER EXTRACT แตงกวา - onimax","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01416","RM - A Liquid - TOMATO EXTRACT มะเขือเทศ","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,2500.0,"THE REAL THREE","","","","","","raw","raw"],
+["RAM01417","RM - A Liquid - LICORICE EXTRACT - ชะเอมเทศ","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,1950.0,"THE REAL THREE","","","","","","raw","raw"],
+["RAM01418","RM - A Liquid - GREEN TEA EXTRACT - ชาเขียว","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01419","RM - A Liquid - CALENDULA EXTRACT ดาวเรือง","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,2500.0,"THE REAL THREE","","","","","","raw","raw"],
+["RAM01420","RM - A Liquid - SUNFLOWER EXTRACT - ทานตะวัน","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01421","RM - A Liquid - DAISY EXTRACT - เดซี่","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01422","RM - A Liquid - MULBERRY EXTRACT - มัลเบอร์รี่","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01423","RM - A Liquid - ROSE EXTRACT - ดอกกุหลาบ","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01424","RM - A Liquid - HONEY - น้ำผึ้ง","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01425","RM - A Liquid - Pitera - Galactomyces","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01426","RM - A Liquid - Acetyl Hexapeptide-8","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM01427","RM - A Liquid - Titanium Dioxide 15 nm Liquid (Gloss)","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,2490.0,"MYSKIN","","","","","","raw","raw"],
+["RAM01428","RM - A Liquid - Zinc Oxide 35 nm Liquid","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0142901","RM - A Liquid - Double Hyaluron Liquid - myskin","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["RAM0142902","RM - A Liquid - Double Hyaluron Liquid - p general","RM","Active Liquid","kg",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","raw"],
+["TES0010101","FG - Tester - ครีมโสม","TESTER","tester cream","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0010201","FG - Tester - ครีมรักแร้ 50 กรัม","TESTER","tester cream","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0010202","FG - Tester - ครีมรักแร้ 100 กรัม","TESTER","tester cream","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0020101","FG - Tester - สครับกาแฟอัด ออริจินอล แรพ","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0020102","FG - Tester - สครับกาแฟอัดเหลือง ออริจินอล แรพ","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0020103","FG - Tester - สครับกาแฟอัดเขียว ออริจินอล แรพ","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0020104","FG - Tester - สครับกาแฟดั้งเดิม","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0020105","FG - Tester - สครับอัดกระปุก","TESTER","tester scrub","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030101","FG - Tester - สบู่มะขาม","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030102","FG - Tester - สครับนมแพะ 80g","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030103","FG - Tester - สบู่นมข้าว","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030104","FG - Tester - สบู่คอลลาเจนแพลงก์ตอน 70g","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030105","FG - Tester - สบู่สับปะรดนมสด","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030106","FG - Tester - สบู่ผักนม 70g","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030107","FG - Tester - สบู่ขมิ้นทานาคา","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030108","FG - Tester - สบู่เกรปซื้ด","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030109","FG - Tester - สบู่มังคุดน้ำผึ้ง","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030110","FG - Tester - สบู่ว่านหางจระเข้แตงกวา","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030111","FG - Tester - สบู่พีช","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030112","FG - Tester - สบู่ขมิ้นกระชายสมุนไพรรวม","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030113","FG - Tester - สบู่แอปเปิ้ล","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030114","FG - Tester - สบู่คูลลิ่งเฟรช","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030115","FG - Tester - สบู่มิกซ์เบอร์รี่","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030116","FG - Tester - สบู่เลม่อน ไวท์เทนนิ่ง","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030117","FG - Tester - สบู่ฮันนี่มานูก้า","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030118","FG - Tester - สบู่คาเลนดูล่า มิ้ลค์","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030119","FG - Tester - สบู่ส้ม","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030120","FG - Tester - สบู่โคโค่เอพริคอต","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030121","FG - Tester - สบู่ใบบัวบกเมล่อนเย็น","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030122","FG - Tester - สบู่กลูต้า","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030123","FG - Tester - สบู่ส้ม (วงรี)","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030124","FG - Tester - สบู่วิตามินซี มิ้ลค์","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"],
+["TES0030125","FG - Tester - สบู่ทับทิม","TESTER","tester soap","ชิ้น",0.0,0.0,0.0,0.0,0.0,"","","","","","","raw","tester"]
+];
+
+    function seed(){
+      DB = { materials:{}, formulas:{}, ledger:[], orders:{}, jobs:[], pos:[], reservations:[], movements:[], _v:4 };
+      // โหลด stock cards 331 รายการจริง
+      STOCK_CARDS.forEach(r=>{
+        const [code,name,itemType,category,unit,qty,min,max,reorder,price,supplier,location,barcode,tradeName,inci,cas,cat,kind]=r;
+        DB.materials[code]={code,name,itemType,category,unit:unit||'ชิ้น',qty:+qty||0,min:+min||0,max:+max||0,reorder:+reorder||0,price:+price||0,supplier:supplier||'',location:location||'',barcode:barcode||'',tradeName:tradeName||'',inci:inci||'',cas:cas||'',cat:cat||'raw',kind:kind||'raw'};
+      });
+      // วัตถุดิบเสริมสำหรับสูตรตัวอย่าง (อ้างด้วยชื่อไทย) — เพิ่มถ้ายังไม่มี
+      const extra=[['เบสใส','kg','raw',120,'สยามเบส'],['เบสขุ่น','kg','raw',130,'สยามเบส'],['น้ำหอมกาแฟ','kg','raw',1800,'อโรมาเฮาส์'],['ผงกาแฟ','kg','raw',350,'ไทยคอฟฟี่'],['ขมิ้น','g','raw',2,'เฮิร์บไทย'],['BHA','kg','raw',900,'เคมีภัณฑ์ไทย'],['Alcohol','kg','raw',80,'เคมีภัณฑ์ไทย'],['Phenoxy','kg','raw',600,'เคมีภัณฑ์ไทย'],['Pg','kg','raw',95,'เคมีภัณฑ์ไทย'],['ฟรุ๊ตเมล่อน','kg','raw',1500,'อโรมาเฮาส์'],['ALS','kg','raw',110,'เคมีภัณฑ์ไทย'],['SLS','kg','raw',120,'เคมีภัณฑ์ไทย'],['ฟองน้ำ','kg','raw',200,'เคมีภัณฑ์ไทย'],['สีชมพู','g','raw',5,'คัลเลอร์แล็บ'],['สีส้ม','g','raw',5,'คัลเลอร์แล็บ'],['น้ำหอมสตรอ','kg','raw',1600,'อโรมาเฮาส์'],['ซองสีชมพู','ซอง','pack',1.2,'แพ็คโปร'],['ตาข่ายตีฟอง','ชิ้น','pack',0.8,'แพ็คโปร'],['Inner','ชิ้น','pack',0.5,'แพ็คโปร'],['ลัง Carton','ใบ','pack',15,'กล่องลังไทย']];
+      extra.forEach(([n,u,c,p,s])=>{ if(!DB.materials[n]) DB.materials[n]={code:n,name:n,itemType:c==='pack'?'PA':'RM',category:'',unit:u,qty:0,min:0,max:0,reorder:0,price:p,supplier:s,location:'',barcode:'',tradeName:'',inci:'',cas:'',cat:c,kind:c}; });
+
+      DB.formulas['ชาวเขา']={base:10000,items:[{mat:'เบสใส',qty:1000},{mat:'BHA',qty:2.2},{mat:'Alcohol',qty:1.8},{mat:'น้ำหอมกาแฟ',qty:8},{mat:'ผงกาแฟ',qty:100},{mat:'ขมิ้น',qty:500},{mat:'Phenoxy',qty:2}]};
+      DB.formulas['นางไพล']={base:5000,items:[{mat:'เบสใส',qty:500},{mat:'BHA',qty:1.1},{mat:'Pg',qty:2.2},{mat:'Alcohol',qty:0.9},{mat:'ฟรุ๊ตเมล่อน',qty:5},{mat:'ผงกาแฟ',qty:50}]};
+      DB.formulas['Chupa chups (สตรอ)']={base:5040,items:[{mat:'เบสขุ่น',qty:404},{mat:'ALS',qty:4},{mat:'SLS',qty:4},{mat:'ฟองน้ำ',qty:4},{mat:'น้ำหอมสตรอ',qty:6.1},{mat:'สีชมพู',qty:203},{mat:'ซองสีชมพู',qty:1,per:'each'},{mat:'ตาข่ายตีฟอง',qty:1,per:'each'},{mat:'Inner',qty:1,per:'each'},{mat:'ลัง Carton',qty:0,per:'pack',size:12}]};
+      const J=(customer,product,qty,unit,order,due,note,ships)=>({id:Date.now()+Math.floor(Math.random()*100000),customer,product,qty,unit,orderDate:order,dueDate:due,note:note||'',formula:'',ships:ships||[],status:ships&&ships.length?(ships.reduce((s,x)=>s+x.qty,0)>=qty?'done':'partial'):'pending'});
+      DB.jobs=[
+        J('JUNE','Lamoon',10000,'ก้อน','2026-06-03','2026-06-06','ส่งพร้อมกัน 06/06'),
+        J('JUNE','สครับก้น',10000,'ก้อน','2026-06-03','2026-06-10',''),
+        J('CERAPURE','สบู่ก้อนฟ้า 85g',13000,'ก้อน','2026-05-03','2026-05-21',''),
+        J('VENITA','สบู่พีช 80g',10000,'ก้อน','2026-06-03','','ห่อ+ตาข่าย+ใส่ซอง · ส่งก่อน 1000',[{date:'2026-06-03',qty:1000,note:'ส่งก่อน'}]),
+        J('Dr.Mom','สบู่มังคุด 5,000',5000,'ก้อน','2025-09-01','','ค้างสะสม',[{date:'2025-09-16',qty:1000,note:''},{date:'2025-10-31',qty:1000,note:''},{date:'2026-01-15',qty:1000,note:''},{date:'2026-03-02',qty:1000,note:''}]),
+        J('Dr.Mom','สบู่เหลว 500ml',3000,'ชิ้น','2025-09-01','',' ',[{date:'2025-10-08',qty:1000,note:''},{date:'2025-10-29',qty:500,note:''},{date:'2026-02-05',qty:500,note:''}])
+      ];
+      // ใบสั่งซื้อตัวอย่าง (partial receive)
+      DB.pos=[
+        {doc:'PO-2606-001',supplier:'THE REAL THREE',date:'2026-06-20',status:'open',lines:[
+          {code:'RM-Niacinamide',name:'Niacinamide',ordered:25,received:10,unit:'kg'},
+          {code:'RM-HA',name:'Sodium Hyaluronate',ordered:5,received:0,unit:'kg'}
+        ]},
+        {doc:'PO-2606-002',supplier:'KMS',date:'2026-06-22',status:'open',lines:[
+          {code:'OVH0010201',name:'ฟิล์มชริ้งหด 19mm',ordered:20,received:20,unit:'ม้วน'}
+        ]}
+      ];
+    }
+
+    function fmt(n){
+      if(n===undefined||n===null||isNaN(n)) return '0';
+      const r = Math.round(n*1000)/1000;
+      return r.toLocaleString('en-US',{maximumFractionDigits:3});
+    }
+    function fmtTHB(n){ if(!n||isNaN(n)) return '฿0'; return '฿'+Math.round(n).toLocaleString('en-US'); }
+    function todayStr(){ return new Date().toISOString().slice(0,10); }
+    function toast(msg,type){
+      const t=$('cmzToast'); if(!t) return;
+      t.textContent=msg; t.className='toast show '+(type||'');
+      clearTimeout(t._t); t._t=setTimeout(()=>t.className='toast',2200);
+    }
+    function statusOf(m){ if(m.qty<=0) return 'short'; if(m.min>0 && m.qty<m.min) return 'warn'; return 'ok'; }
+    function pill(s){
+      const map={ok:['ok','พอ'],warn:['warn','ใกล้หมด'],short:['short','หมด']};
+      const [c,l]=map[s]; return '<span class="pill '+c+'">'+l+'</span>';
+    }
+    function matIcon(m){ return m.cat==='pack' ? 'box' : 'flask-conical'; }
+    function matTile(m){ return '<span class="ic '+(m.cat==='pack'?'orange':'gold')+'"><i data-lucide="'+matIcon(m)+'"></i></span>'; }
+    function esc(s){ return String(s).replace(/'/g,"\\'"); }
+
+    $('cmzTabs').addEventListener('click',e=>{
+      const b=e.target.closest('button'); if(!b)return;
+      document.querySelectorAll('#cmzTabs button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      document.querySelectorAll('.cmz-app .view').forEach(v=>v.classList.remove('active'));
+      $('view-'+b.dataset.tab).classList.add('active');
+      renderAll();
+      LU(); setTimeout(LU,60);
+    });
+
+    const ORDER_STEPS = ['ต้องสั่ง','สั่งแล้ว','โอนแล้ว','รับแล้ว'];
+    function stepperHtml(name){
+      const cur = DB.orders[name] ?? 0;
+      const btns = ORDER_STEPS.map((label,i)=>{
+        let cls='';
+        if(i===cur && i>0) cls='cur';
+        else if(i>0 && i<cur) cls='done';
+        return '<button class="'+cls+'" onclick="cmzSetOrderStatus(\''+esc(name)+'\','+i+')">'+(i<cur&&i>0?'\u2713 ':'')+label+'</button>';
+      }).join('');
+      const showClear = cur>0;
+      return '<div class="st-cell"><div class="stepper">'+btns+'</div>'+(showClear?'<button class="st-clear" onclick="cmzSetOrderStatus(\''+esc(name)+'\',0)">ล้าง</button>':'')+'</div>';
+    }
+    async function setOrderStatus(name,step){
+      if(step<=0){ delete DB.orders[name]; }
+      else { DB.orders[name]=step; }
+      if(step===ORDER_STEPS.length-1){
+        const m=DB.materials[name];
+        const need=Math.max((m.min||0)-m.qty,0);
+        const def=need>0?need:'';
+        const amt=prompt('รับ "'+name+'" เข้าสต็อกเท่าไร? ('+m.unit+')\\nเว้นว่าง = แค่อัปเดตสถานะ ไม่บวกยอด', def);
+        if(amt!==null && amt.trim()!==''){
+          const q=parseFloat(amt)||0;
+          if(q>0){ m.qty+=q; delete DB.orders[name]; toast('รับเข้าสต็อก +'+fmt(q)+' '+m.unit,'ok'); }
+        }
+      }
+      await save(); renderDash(); renderStock();
+    }
+
+    function renderDash(){
+      const mats=Object.entries(DB.materials);
+      let short=0,warn=0,ok=0;
+      mats.forEach(([,m])=>{ const s=statusOf(m); if(s==='short')short++;else if(s==='warn')warn++;else ok++; });
+      const hs=$('heroStats');
+      if(hs) hs.innerHTML =
+        '<div class="hs"><div class="hs-v dpl">'+mats.length+'</div><div class="hs-l">วัตถุดิบ</div></div>'+
+        '<div class="hs"><div class="hs-v dpl" style="color:var(--short)">'+short+'</div><div class="hs-l">หมด / ติดลบ</div></div>'+
+        '<div class="hs"><div class="hs-v dpl" style="color:var(--warn)">'+warn+'</div><div class="hs-l">ใกล้หมด</div></div>'+
+        '<div class="hs"><div class="hs-v dpl">'+Object.keys(DB.formulas).length+'</div><div class="hs-l">สูตร</div></div>';
+      $('kpis').innerHTML =
+        '<div class="kpi"><div class="kv dpl">'+mats.length+'</div><div class="kl">วัตถุดิบทั้งหมด</div></div>'+
+        '<div class="kpi s-short"><div class="kv dpl">'+short+'</div><div class="kl">หมด / ติดลบ</div></div>'+
+        '<div class="kpi s-warn"><div class="kv dpl">'+warn+'</div><div class="kl">ใกล้หมด</div></div>'+
+        '<div class="kpi s-ok"><div class="kv dpl">'+ok+'</div><div class="kl">เพียงพอ</div></div>'+
+        '<div class="kpi"><div class="kv dpl">'+Object.keys(DB.formulas).length+'</div><div class="kl">สูตร</div></div>'+
+        '<div class="kpi"><div class="kv dpl">'+DB.ledger.length+'</div><div class="kl">รอบที่ตัดแล้ว</div></div>';
+      const reorder = mats.filter(([n,m])=>statusOf(m)!=='ok' || (DB.orders[n]>0))
+        .sort((a,b)=> (statusOf(a[1])==='short'?-1:1)-(statusOf(b[1])==='short'?-1:1));
+      let reorderBudget=0;
+      reorder.forEach(([n,m])=>{ const need=Math.max((m.min||0)-m.qty,0); reorderBudget += need*(m.price||0); });
+      $('kpis').insertAdjacentHTML('beforeend','<div class="kpi s-budget"><div class="kv dpl">'+fmtTHB(reorderBudget)+'</div><div class="kl">งบสั่งซื้อโดยประมาณ</div></div>');
+      $('reorderList').innerHTML = reorder.length ? tw(
+        '<table><thead><tr><th>วัตถุดิบ</th><th>Supplier</th><th class="num">คงเหลือ</th><th class="num">ควรเติม</th><th class="num">ราคา/หน่วย</th><th class="num">งบที่ต้องใช้</th><th>สถานะการสั่งซื้อ</th></tr></thead><tbody>'+
+        reorder.map(([n,m])=>{ const need=Math.max((m.min||0)-m.qty,0); const bud=need*(m.price||0);
+          return '<tr><td><div class="mat-cell">'+matTile(m)+'<span>'+n+'</span></div></td><td>'+(m.supplier||'<span style="color:var(--ink-faint)">—</span>')+'</td><td class="num">'+fmt(m.qty)+' '+m.unit+'</td><td class="num">'+(need>0?fmt(need)+' '+m.unit:'—')+'</td><td class="num">'+(m.price?fmtTHB(m.price):'—')+'</td><td class="num" style="font-weight:600">'+(bud>0?fmtTHB(bud):'—')+'</td><td>'+stepperHtml(n)+'</td></tr>';
+        }).join('')+'<tr><td colspan="5" style="text-align:right;font-weight:600;color:var(--ink-dim)">รวมงบที่ต้องสั่งซื้อโดยประมาณ</td><td class="num" style="font-weight:800;color:var(--gold)">'+fmtTHB(reorderBudget)+'</td><td></td></tr></tbody></table>') : '<div class="empty"><i data-lucide="check-circle-2"></i> ไม่มีรายการที่ต้องสั่งซื้อ</div>';
+      const recent = [...DB.ledger].slice(-5).reverse();
+      $('recentRuns').innerHTML = recent.length ? tw(
+        '<table><thead><tr><th>วันที่</th><th>สูตร</th><th class="num">จำนวน</th><th class="num">วัตถุดิบที่ตัด</th></tr></thead><tbody>'+
+        recent.map(r=>'<tr><td class="mono">'+r.date+'</td><td>'+r.formula+'</td><td class="num">'+fmt(r.qty)+'</td><td class="num">'+r.items.length+' รายการ</td></tr>').join('')+
+        '</tbody></table>') : '<div class="empty">ยังไม่มีการตัดสต็อก</div>';
+      LU();
+    }
+
+    function renderStock(){
+      const q=($('stockSearch').value||'').toLowerCase();
+      const all=Object.entries(DB.materials).filter(([n])=>n.toLowerCase().includes(q)).sort((a,b)=>a[0].localeCompare(b[0],'th'));
+      const rowHtml=([n,m])=>'<tr>'+
+          '<td><div class="mat-cell">'+matTile(m)+'<span>'+n+'</span></div></td>'+
+          '<td><input style="width:120px" value="'+(m.supplier||'')+'" placeholder="—" onchange="cmzSetMatStr(\''+esc(n)+'\',\'supplier\',this.value)"></td>'+
+          '<td class="num"><input class="mono" style="width:100px;text-align:right" type="number" value="'+m.qty+'" onchange="cmzSetMat(\''+esc(n)+'\',\'qty\',this.value)"></td>'+
+          '<td>'+m.unit+'</td>'+
+          '<td class="num"><input class="mono" style="width:84px;text-align:right" type="number" value="'+(m.price||0)+'" onchange="cmzSetMat(\''+esc(n)+'\',\'price\',this.value)"></td>'+
+          '<td class="num"><input class="mono" style="width:84px;text-align:right" type="number" value="'+m.min+'" onchange="cmzSetMat(\''+esc(n)+'\',\'min\',this.value)"></td>'+
+          '<td>'+pill(statusOf(m))+'</td>'+
+          '<td><button class="mini danger" onclick="cmzDelMat(\''+esc(n)+'\')">ลบ</button></td></tr>';
+      const head='<thead><tr><th>วัตถุดิบ</th><th>Supplier</th><th class="num">คงเหลือ</th><th>หน่วย</th><th class="num">ราคา/หน่วย</th><th class="num">จุดสั่งซื้อ</th><th>สถานะ</th><th></th></tr></thead>';
+      const raw=all.filter(([,m])=>m.cat!=='pack');
+      const pack=all.filter(([,m])=>m.cat==='pack');
+      let html='';
+      if(!all.length){ html='<div class="empty">ไม่พบวัตถุดิบ</div>'; }
+      else{
+        html ='<div class="sub-head"><i data-lucide="flask-conical"></i> เนื้อ / สารเคมี ('+raw.length+')</div>'+
+          tw('<table>'+head+'<tbody>'+(raw.map(rowHtml).join('')||'<tr><td colspan="8" class="empty">—</td></tr>')+'</tbody></table>');
+        html+='<div class="sub-head gap"><i data-lucide="box"></i> บรรจุภัณฑ์ ('+pack.length+')</div>'+
+          tw('<table>'+head+'<tbody>'+(pack.map(rowHtml).join('')||'<tr><td colspan="8" class="empty">—</td></tr>')+'</tbody></table>');
+      }
+      $('stockTable').innerHTML=html; LU();
+    }
+    async function setMat(n,k,v){ DB.materials[n][k]=parseFloat(v)||0; await save(); renderStock(); }
+    async function setMatStr(n,k,v){ DB.materials[n][k]=v; await save(); }
+    async function delMat(n){ if(!confirm('ลบ "'+n+'" ?'))return; delete DB.materials[n]; await save(); renderAll(); toast('ลบแล้ว'); }
+    async function addOrReceive(){
+      const n=$('matName').value.trim();
+      const q=parseFloat($('matQty').value)||0;
+      const u=$('matUnit').value;
+      const min=parseFloat($('matMin').value)||0;
+      const cat=$('matCat').value;
+      const price=parseFloat($('matPrice').value)||0;
+      const supplier=$('matSupplier').value.trim();
+      if(!n){toast('ใส่ชื่อวัตถุดิบก่อน','err');return;}
+      if(DB.materials[n]){ DB.materials[n].qty+=q; if(min)DB.materials[n].min=min; if(price)DB.materials[n].price=price; if(supplier)DB.materials[n].supplier=supplier; toast('รับของเข้า +'+fmt(q)+' '+DB.materials[n].unit,'ok'); }
+      else { DB.materials[n]={unit:u,qty:q,min:min,cat:cat,price:price,supplier:supplier}; toast('เพิ่มวัตถุดิบใหม่','ok'); }
+      await save();
+      $('matName').value='';$('matQty').value='';$('matMin').value='';$('matPrice').value='';$('matSupplier').value='';
+      renderStock();
+    }
+
+    function addBomRow(mat='',qty='',per='unit',size=''){
+      const wrap=$('bomRows');
+      const div=document.createElement('div');
+      div.className='bomrow';
+      const opts=Object.keys(DB.materials).map(n=>'<option '+(n===mat?'selected':'')+'>'+n+'</option>').join('');
+      div.innerHTML=
+        '<select class="bm-mat"><option value="">— เลือก —</option>'+opts+'</select>'+
+        '<select class="bm-per" title="วิธีคำนวณ">'+
+          '<option value="unit" '+(per==='unit'?'selected':'')+'>ต่อหน่วยฐาน</option>'+
+          '<option value="each" '+(per==='each'?'selected':'')+'>ต่อ 1 ชิ้น</option>'+
+          '<option value="pack" '+(per==='pack'?'selected':'')+'>กี่ชิ้น/หน่วย</option>'+
+        '</select>'+
+        '<input class="bm-qty mono" type="number" placeholder="ปริมาณ" value="'+qty+'">'+
+        '<input class="bm-size mono" type="number" placeholder="ชิ้น/ลัง" value="'+size+'" style="display:none">'+
+        '<button class="mini" onclick="this.parentNode.remove()">✕</button>';
+      const sel=div.querySelector('.bm-mat');
+      const perSel=div.querySelector('.bm-per'), qtyIn=div.querySelector('.bm-qty'), sizeIn=div.querySelector('.bm-size');
+      const setMode=()=>{ if(perSel.value==='pack'){ qtyIn.style.display='none'; sizeIn.style.display=''; } else { qtyIn.style.display=''; sizeIn.style.display='none'; } };
+      sel.addEventListener('change',()=>{ if(DB.materials[sel.value] && DB.materials[sel.value].cat==='pack' && perSel.value==='unit'){ perSel.value='each'; setMode(); } });
+      perSel.addEventListener('change',setMode);
+      setMode();
+      wrap.appendChild(div);
+    }
+    async function saveFormula(){
+      const name=$('fName').value.trim();
+      const base=parseFloat($('fBase').value)||0;
+      if(!name){toast('ใส่ชื่อสูตร','err');return;}
+      if(base<=0){toast('ใส่หน่วยฐาน (>0)','err');return;}
+      const items=[];
+      document.querySelectorAll('#bomRows .bomrow').forEach(r=>{
+        const m=r.querySelector('.bm-mat').value;
+        const per=r.querySelector('.bm-per').value;
+        const qv=parseFloat(r.querySelector('.bm-qty').value)||0;
+        const size=parseFloat(r.querySelector('.bm-size').value)||0;
+        if(!m)return;
+        if(per==='pack'){ if(size>0) items.push({mat:m,qty:0,per:'pack',size}); }
+        else if(qv>0){ items.push({mat:m,qty:qv,per}); }
+      });
+      if(!items.length){toast('ใส่วัตถุดิบอย่างน้อย 1 ตัว','err');return;}
+      DB.formulas[name]={base,items};
+      await save();
+      toast('บันทึกสูตร "'+name+'"','ok');
+      resetFormulaForm(); renderFormulas(); refreshProdFormulas();
+    }
+    function editFormula(name){
+      editingFormula=name;
+      const f=DB.formulas[name];
+      $('fName').value=name; $('fBase').value=f.base; $('bomRows').innerHTML='';
+      f.items.forEach(it=>addBomRow(it.mat,it.qty,it.per||'unit',it.size||''));
+      $('fEditHint').textContent='กำลังแก้: '+name;
+    }
+    function resetFormulaForm(){
+      editingFormula=null;
+      $('fName').value=''; $('fBase').value=''; $('bomRows').innerHTML='';
+      $('fEditHint').textContent=''; addBomRow();
+    }
+    async function delFormula(name){ if(!confirm('ลบสูตร "'+name+'" ?'))return; delete DB.formulas[name]; await save(); renderFormulas(); refreshProdFormulas(); toast('ลบสูตรแล้ว'); }
+    function renderFormulas(){
+      const list=Object.entries(DB.formulas);
+      $('formulaList').innerHTML = list.length ? list.map(([n,f])=>{
+        const bw=batchWeight(f);
+        const bwLine = bw>0 ? '<div style="font-size:12px;color:var(--ink-dim);margin-bottom:10px">น้ำหนัก batch รวม (เนื้อ/สารเคมี) ≈ <span class="mono" style="color:var(--gold-2)">'+fmt(bw)+' kg</span> · % คิดจากฐานนี้</div>' : '';
+        const rows=f.items.map(it=>{
+          const mm=DB.materials[it.mat]||{unit:'',cat:'raw'};
+          const u=mm.unit; const isPack=mm.cat==='pack';
+          let amt,mode,pct;
+          if(it.per==='each'){ amt=fmt(it.qty)+' '+u+'/ชิ้น'; mode='ต่อ 1 ชิ้นผลิต'; pct='—'; }
+          else if(it.per==='pack'){ amt='1 '+u; mode='ทุก '+fmt(it.size)+' ชิ้น = 1 '+u; pct='—'; }
+          else { amt=fmt(it.qty)+' '+u; mode='ต่อ '+fmt(f.base)+' หน่วย'; pct=pctOf(f,it); }
+          return '<tr><td>'+(isPack?'<i data-lucide="box" class="mini-ic"></i>':'')+it.mat+'</td><td class="num">'+amt+'</td><td class="num" style="color:var(--gold-2);font-weight:600">'+pct+'</td><td style="color:var(--ink-dim);font-size:12px">'+mode+'</td></tr>';
+        }).join('');
+        return '<details class="led"><summary>'+
+          '<span class="chev"><i data-lucide="chevron-right"></i></span> <strong>'+n+'</strong>'+
+          '<span class="when">ฐาน '+fmt(f.base)+' หน่วย · '+f.items.length+' วัตถุดิบ</span>'+
+          '<span class="qty"></span></summary><div class="body">'+bwLine+
+          tw('<table><thead><tr><th>วัตถุดิบ</th><th class="num">ปริมาณ</th><th class="num">%</th><th>วิธีคิด</th></tr></thead><tbody>'+rows+'</tbody></table>')+
+          '<div class="row-actions" style="margin-top:12px"><button class="mini" onclick="cmzEditFormula(\''+esc(n)+'\')">แก้ไข</button><button class="mini danger" onclick="cmzDelFormula(\''+esc(n)+'\')">ลบ</button></div>'+
+          '</div></details>';
+      }).join('') : '<div class="empty">ยังไม่มีสูตร</div>';
+      LU();
+    }
+
+    function toKg(mat,qty){ const u=DB.materials[mat] && DB.materials[mat].unit; if(u==='kg') return qty; if(u==='g') return qty/1000; return null; }
+    function batchWeight(f){ let sum=0; f.items.forEach(it=>{ if((it.per||'unit')!=='unit') return; const kg=toKg(it.mat,it.qty); if(kg!==null) sum+=kg; }); return sum; }
+    function pctOf(f,it){ const bw=batchWeight(f); const kg=toKg(it.mat,it.qty); if(bw<=0||kg===null) return '—'; return (kg/bw*100).toFixed(2)+'%'; }
+
+    function refreshProdFormulas(){
+      const sel=$('prodFormula'); const cur=sel.value;
+      sel.innerHTML='<option value="">— เลือกสูตร —</option>'+Object.keys(DB.formulas).map(n=>'<option '+(n===cur?'selected':'')+'>'+n+'</option>').join('');
+    }
+    function computeRun(fname,qty){
+      const f=DB.formulas[fname]; if(!f||!qty) return null;
+      const factor=qty/f.base;
+      const items=f.items.map(it=>{
+        const m=DB.materials[it.mat]||{qty:0,unit:'?',cat:'raw'};
+        let need; const per=it.per||'unit';
+        if(per==='each'){ need = it.qty*qty; }
+        else if(per==='pack'){ need = it.size>0 ? Math.ceil(qty/it.size) : 0; }
+        else { need = it.qty*factor; }
+        const after=m.qty-need;
+        return {mat:it.mat,unit:m.unit,cat:m.cat||'raw',have:m.qty,need,after,short:after<0?-after:0,per};
+      });
+      return {factor,items};
+    }
+    function recalcRun(){
+      const fname=$('prodFormula').value;
+      const qty=parseFloat($('prodQty').value)||0;
+      $('runFormulaName').textContent = fname?('· ฐานสูตร '+fmt(DB.formulas[fname].base)):'';
+      const btn=$('confirmRunBtn'); const hint=$('batchHint');
+      if(fname && qty>0){ const f=DB.formulas[fname]; hint.textContent = '= '+fmt(qty/f.base)+' เท่าของหน่วยฐาน ('+fmt(f.base)+')'; } else hint.textContent='';
+      if(!fname||qty<=0){ $('runPreview').innerHTML='<div class="empty">เลือกสูตรและใส่จำนวนเพื่อดูผล</div>'; btn.disabled=true; $('confirmHint').textContent=''; LU(); return; }
+      const res=computeRun(fname,qty);
+      const anyShort=res.items.some(i=>i.short>0);
+      const renderRows=(arr)=>arr.map(i=>{
+        const f=DB.formulas[fname];
+        const sizeInfo = i.per==='pack' ? ' <span style="color:var(--ink-faint);font-size:11px">(1:'+((f.items.find(x=>x.mat===i.mat)||{}).size||'?')+')</span>' : '';
+        return '<tr><td>'+i.mat+sizeInfo+'</td><td class="num">'+fmt(i.need)+' '+i.unit+'</td><td class="num">'+fmt(i.have)+'</td><td class="num" style="color:'+(i.after<0?'var(--short)':'var(--ink)')+'">'+fmt(i.after)+' '+i.unit+'</td><td>'+(i.short>0?'<span class="pill short">ขาด '+fmt(i.short)+'</span>':'<span class="pill ok">พอ</span>')+'</td></tr>';
+      }).join('');
+      const raw=res.items.filter(i=>i.cat!=='pack');
+      const pack=res.items.filter(i=>i.cat==='pack');
+      const head='<thead><tr><th>วัตถุดิบ</th><th class="num">ต้องใช้</th><th class="num">มี</th><th class="num">คงเหลือ</th><th></th></tr></thead>';
+      let html=tw('<table>'+head+'<tbody>'+renderRows(raw)+'</tbody></table>');
+      if(pack.length){ html+='<div class="sub-head gap"><i data-lucide="box"></i> บรรจุภัณฑ์</div>'+tw('<table>'+head+'<tbody>'+renderRows(pack)+'</tbody></table>'); }
+      $('runPreview').innerHTML=html;
+      btn.disabled=false;
+      $('confirmHint').innerHTML = anyShort ? '<i data-lucide="alert-triangle" style="width:14px;height:14px;vertical-align:-2px"></i> มีของขาด — ตัดได้ แต่ยอดจะติดลบ' : '<i data-lucide="check" style="width:14px;height:14px;vertical-align:-2px"></i> วัตถุดิบเพียงพอ';
+      $('confirmHint').style.color = anyShort?'var(--warn)':'var(--ok)';
+      LU();
+    }
+    async function confirmRun(){
+      const fname=$('prodFormula').value;
+      const qty=parseFloat($('prodQty').value)||0;
+      const date=$('prodDate').value||todayStr();
+      const note=$('prodNote').value.trim();
+      if(!fname||qty<=0)return;
+      const res=computeRun(fname,qty);
+      res.items.forEach(i=>{ if(DB.materials[i.mat]) DB.materials[i.mat].qty -= i.need; });
+      DB.ledger.push({ id:Date.now(), date, formula:fname, qty, note, items:res.items.map(i=>({mat:i.mat,unit:i.unit,cat:i.cat,used:i.need,before:i.have,after:i.after})) });
+      await save();
+      toast('ตัดสต็อกแล้ว: '+fname+' '+fmt(qty),'ok');
+      $('prodQty').value=''; $('prodNote').value='';
+      recalcRun(); renderAll();
+    }
+
+    function renderLedger(){
+      const list=[...DB.ledger].reverse();
+      $('ledgerList').innerHTML = list.length ? list.map(r=>
+        '<details class="led"><summary>'+
+        '<span class="chev"><i data-lucide="chevron-right"></i></span>'+
+        '<span class="when">'+r.date+'</span> <strong>'+r.formula+'</strong>'+
+        (r.note?'<span style="color:var(--ink-faint);font-size:12px">· '+r.note+'</span>':'')+
+        '<span class="qty">'+fmt(r.qty)+' หน่วย · ตัด '+r.items.length+' รายการ</span></summary><div class="body">'+
+        tw('<table><thead><tr><th>วัตถุดิบ</th><th class="num">ตัดออก</th><th class="num">ก่อนตัด</th><th class="num">หลังตัด</th></tr></thead><tbody>'+
+        r.items.map(i=>'<tr><td>'+i.mat+'</td><td class="num">'+fmt(i.used)+' '+i.unit+'</td><td class="num">'+fmt(i.before)+'</td><td class="num" style="color:'+(i.after<0?'var(--short)':'var(--ink)')+'">'+fmt(i.after)+'</td></tr>').join('')+
+        '</tbody></table>')+
+        '<div class="row-actions" style="margin-top:12px"><button class="mini danger" onclick="cmzReverseRun('+r.id+')">ย้อนรายการ (คืนสต็อก)</button></div>'+
+        '</div></details>').join('') : '<div class="empty">ยังไม่มีประวัติการตัด</div>';
+      LU();
+    }
+    async function reverseRun(id){
+      if(!confirm('ย้อนรายการนี้? วัตถุดิบจะถูกคืนกลับเข้าสต็อก'))return;
+      const idx=DB.ledger.findIndex(r=>r.id===id); if(idx<0)return;
+      const r=DB.ledger[idx];
+      r.items.forEach(i=>{ if(DB.materials[i.mat]) DB.materials[i.mat].qty += i.used; });
+      DB.ledger.splice(idx,1);
+      await save(); renderAll(); toast('ย้อนรายการแล้ว — คืนสต็อก');
+    }
+
+    function exportData(){
+      const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+      a.download='cmz-stock-'+todayStr()+'.json'; a.click();
+      toast('ส่งออกไฟล์สำรองแล้ว','ok');
+    }
+    async function importData(e){
+      const file=e.target.files[0]; if(!file)return;
+      try{
+        const txt=await file.text(); const d=JSON.parse(txt);
+        if(!d.materials||!d.formulas){throw new Error('ไฟล์ไม่ถูกต้อง');}
+        DB=d; if(!DB.ledger)DB.ledger=[];
+        await save(); renderAll(); refreshProdFormulas();
+        toast('นำเข้าข้อมูลแล้ว','ok');
+      }catch(err){ toast('นำเข้าไม่สำเร็จ: '+err.message,'err'); }
+      e.target.value='';
+    }
+
+    /* ============ JOB ORDERS ============ */
+    let editingJob = null;
+    const JOB_STATUS = { pending:'รอผลิต', producing:'กำลังผลิต', partial:'ส่งบางส่วน', done:'ส่งครบแล้ว' };
+    function jobShipped(j){ return (j.ships||[]).reduce((s,x)=>s+(x.qty||0),0); }
+    function jobRemaining(j){ return Math.max(j.qty - jobShipped(j),0); }
+    function jobStatus(j){
+      const sh=jobShipped(j);
+      if(sh>=j.qty && j.qty>0) return 'done';
+      if(sh>0) return 'partial';
+      return j.status==='producing' ? 'producing' : 'pending';
+    }
+    function daysUntil(due){
+      if(!due) return null;
+      const d=new Date(due+'T00:00:00'); const t=new Date(); t.setHours(0,0,0,0);
+      return Math.round((d-t)/86400000);
+    }
+    function refreshJobFormulas(){
+      const sel=$('joFormula'); if(!sel) return; const cur=sel.value;
+      sel.innerHTML='<option value="">— ไม่เชื่อมสูตร —</option>'+Object.keys(DB.formulas).map(n=>'<option '+(n===cur?'selected':'')+'>'+n+'</option>').join('');
+    }
+    function renderJobs(){
+      refreshJobFormulas();
+      const jobs=DB.jobs||[];
+      // KPIs
+      let pending=0,producing=0,partial=0,done=0,overdue=0;
+      jobs.forEach(j=>{ const s=jobStatus(j); if(s==='done')done++;else if(s==='partial')partial++;else if(s==='producing')producing++;else pending++;
+        const d=daysUntil(j.dueDate); if(d!==null && d<0 && s!=='done') overdue++; });
+      $('jobKpis').innerHTML =
+        '<div class="jkpi"><span class="jk-ic jk-blue"><i data-lucide="clipboard-list"></i></span><div><div class="jk-v">'+jobs.length+'</div><div class="jk-l">ออเดอร์ทั้งหมด</div></div></div>'+
+        '<div class="jkpi"><span class="jk-ic jk-warn"><i data-lucide="flask-conical"></i></span><div><div class="jk-v">'+(pending+producing)+'</div><div class="jk-l">รอผลิต / กำลังผลิต</div></div></div>'+
+        '<div class="jkpi"><span class="jk-ic jk-warn"><i data-lucide="truck"></i></span><div><div class="jk-v">'+partial+'</div><div class="jk-l">ส่งบางส่วน (ค้าง)</div></div></div>'+
+        '<div class="jkpi"><span class="jk-ic jk-red"><i data-lucide="calendar-clock"></i></span><div><div class="jk-v">'+overdue+'</div><div class="jk-l">เลยกำหนดส่ง</div></div></div>'+
+        '<div class="jkpi"><span class="jk-ic jk-green"><i data-lucide="package-check"></i></span><div><div class="jk-v">'+done+'</div><div class="jk-l">ส่งครบแล้ว</div></div></div>';
+
+      const q=($('jobSearch').value||'').toLowerCase();
+      const filter=$('jobFilter').value, sort=$('jobSort').value;
+      let list=jobs.filter(j=>(j.customer+' '+j.product).toLowerCase().includes(q));
+      list=list.filter(j=>{ const s=jobStatus(j);
+        if(filter==='all')return true; if(filter==='active')return s!=='done'; return s===filter; });
+      list.sort((a,b)=>{
+        if(sort==='customer') return a.customer.localeCompare(b.customer,'th');
+        if(sort==='order') return (b.orderDate||'').localeCompare(a.orderDate||'');
+        // due: ไม่มีวันส่งไปท้าย, มีวันส่งเรียงใกล้สุดก่อน
+        const da=a.dueDate||'9999', db=b.dueDate||'9999'; return da.localeCompare(db);
+      });
+
+      if(!list.length){ $('jobList').innerHTML='<div class="empty">ไม่มีออเดอร์ตามเงื่อนไข</div>'; LU(); return; }
+      $('jobList').innerHTML = list.map(j=>{
+        const s=jobStatus(j); const shipped=jobShipped(j); const remain=jobRemaining(j);
+        const pct=j.qty>0?Math.min(Math.round(shipped/j.qty*100),100):0;
+        const d=daysUntil(j.dueDate);
+        let cd, cdCls;
+        if(s==='done'){ cd='ส่งครบแล้ว'; cdCls='cd-done'; }
+        else if(d===null){ cd='ไม่ระบุวันส่ง'; cdCls='cd-done'; }
+        else if(d<0){ cd='เลย '+(-d)+' วัน'; cdCls='cd-over'; }
+        else if(d===0){ cd='ส่งวันนี้!'; cdCls='cd-soon'; }
+        else if(d<=7){ cd='อีก '+d+' วัน'; cdCls='cd-soon'; }
+        else { cd='อีก '+d+' วัน'; cdCls='cd-ok'; }
+        const overdueCls = (d!==null && d<0 && s!=='done') ? ' overdue' : '';
+        const ships=(j.ships||[]).map((x,i)=>
+          '<div class="ship-row"><i data-lucide="truck" style="width:14px;height:14px;color:var(--ok)"></i> ส่ง <b>'+fmt(x.qty)+'</b> '+j.unit+
+          ' <span style="color:var(--ink-faint)">'+(x.date||'')+'</span>'+(x.note?' <span style="color:var(--ink-dim)">· '+x.note+'</span>':'')+
+          '<button class="mini danger" style="margin-left:auto" onclick="cmzDelShip(\''+j.id+'\','+i+')">ลบ</button></div>').join('') || '<div style="color:var(--ink-faint);font-size:12px;padding:6px 0">ยังไม่มีการส่ง</div>';
+        return '<div class="job s-'+s+overdueCls+'">'+
+          '<div class="job-head" onclick="cmzToggleJob(this)">'+
+            '<div style="flex:1;min-width:0">'+
+              '<div class="job-cust">'+j.customer+'</div>'+
+              '<div class="job-prod">'+j.product+'</div>'+
+              '<div class="job-meta">'+
+                '<span>สั่ง <b>'+fmt(j.qty)+'</b> '+j.unit+'</span>'+
+                '<span>ส่งแล้ว <b>'+fmt(shipped)+'</b></span>'+
+                '<span style="color:'+(remain>0?'var(--short)':'var(--ok)')+'">ค้าง <b style="color:inherit">'+fmt(remain)+'</b></span>'+
+                (j.orderDate?'<span>วันสั่ง <b>'+j.orderDate+'</b></span>':'')+
+                (j.dueDate?'<span>กำหนดส่ง <b>'+j.dueDate+'</b></span>':'')+
+                (j.formula?'<span style="color:var(--gold)">สูตร: '+j.formula+'</span>':'')+
+              '</div>'+
+              '<div class="progress"><i style="width:'+pct+'%"></i></div>'+
+            '</div>'+
+            '<div class="job-right">'+
+              '<span class="countdown '+cdCls+'">'+cd+'</span>'+
+              '<span class="job-stat js-'+s+'">'+JOB_STATUS[s]+'</span>'+
+            '</div>'+
+          '</div>'+
+          '<div class="job-body" style="display:none">'+
+            (j.note?'<div style="font-size:12.5px;color:var(--ink-dim);margin-bottom:10px">📝 '+j.note+'</div>':'')+
+            '<div class="sub-head"><i data-lucide="truck"></i> ประวัติการส่ง</div>'+ships+
+            '<div class="ship-in">'+
+              '<label class="fld" style="max-width:120px"><span>ส่งเพิ่ม (จำนวน)</span><input class="mono ship-qty" type="number" placeholder="'+(remain||0)+'"></label>'+
+              '<label class="fld" style="max-width:150px"><span>วันที่ส่ง</span><input class="mono ship-date" type="date" value="'+todayStr()+'"></label>'+
+              '<label class="fld" style="flex:1;min-width:120px"><span>หมายเหตุ</span><input class="ship-note" placeholder="เช่น ส่งคืน / รอบ 2"></label>'+
+              '<button class="act" onclick="cmzAddShip(\''+j.id+'\',this)"><i data-lucide="truck"></i> บันทึกการส่ง</button>'+
+            '</div>'+
+            '<div class="row-actions" style="margin-top:14px">'+
+              (s==='pending'?'<button class="mini" onclick="cmzSetJobStatus(\''+j.id+'\',\'producing\')">เริ่มผลิต</button>':'')+
+              (j.formula?'<button class="mini" onclick="cmzProduceJob(\''+j.id+'\')"><i data-lucide="flask-conical" style="width:13px;height:13px;vertical-align:-2px"></i> ตัดสต็อกตามสูตร</button>':'')+
+              '<button class="mini" onclick="cmzEditJob(\''+j.id+'\')">แก้ไข</button>'+
+              '<button class="mini danger" onclick="cmzDelJob(\''+j.id+'\')"><i data-lucide="trash-2" style="width:13px;height:13px;vertical-align:-2px"></i> ลบออเดอร์</button>'+
+            '</div>'+
+          '</div>'+
+        '</div>';
+      }).join('');
+      LU(); setTimeout(LU,50);
+    }
+    window.cmzToggleJob=function(el){ const b=el.parentNode.querySelector('.job-body'); b.style.display = b.style.display==='none'?'':'none'; LU(); setTimeout(LU,30); };
+    async function saveJob(){
+      const customer=$('joCustomer').value.trim();
+      const product=$('joProduct').value.trim();
+      const qty=parseFloat($('joQty').value)||0;
+      if(!customer||!product){toast('ใส่ลูกค้าและสินค้า','err');return;}
+      if(qty<=0){toast('ใส่จำนวนสั่ง','err');return;}
+      const data={ customer, product, qty, unit:$('joUnit').value,
+        orderDate:$('joOrderDate').value||todayStr(), dueDate:$('joDueDate').value||'',
+        formula:$('joFormula').value, note:$('joNote').value.trim() };
+      if(editingJob){
+        const j=DB.jobs.find(x=>String(x.id)===String(editingJob));
+        if(j) Object.assign(j,data);
+        toast('แก้ไขออเดอร์แล้ว','ok');
+      } else {
+        DB.jobs.push(Object.assign({id:Date.now()+''+Math.floor(Math.random()*1000), ships:[], status:'pending'}, data));
+        toast('เพิ่มออเดอร์แล้ว','ok');
+      }
+      await save(); resetJobForm(); renderJobs();
+    }
+    function editJob(id){
+      const j=DB.jobs.find(x=>String(x.id)===String(id)); if(!j)return;
+      editingJob=id;
+      $('joCustomer').value=j.customer; $('joProduct').value=j.product; $('joQty').value=j.qty;
+      $('joUnit').value=j.unit; $('joOrderDate').value=j.orderDate||''; $('joDueDate').value=j.dueDate||'';
+      refreshJobFormulas(); $('joFormula').value=j.formula||''; $('joNote').value=j.note||'';
+      $('joEditHint').textContent='กำลังแก้: '+j.customer+' · '+j.product;
+      document.querySelector('.cmz-app main').scrollIntoView({behavior:'smooth'});
+    }
+    function resetJobForm(){
+      editingJob=null;
+      ['joCustomer','joProduct','joQty','joNote'].forEach(id=>$(id).value='');
+      $('joOrderDate').value=todayStr(); $('joDueDate').value=''; $('joEditHint').textContent='';
+    }
+    async function delJob(id){ if(!confirm('ลบออเดอร์นี้?'))return; DB.jobs=DB.jobs.filter(x=>String(x.id)!==String(id)); await save(); renderJobs(); toast('ลบแล้ว'); }
+    async function setJobStatus(id,st){ const j=DB.jobs.find(x=>String(x.id)===String(id)); if(j){ j.status=st; await save(); renderJobs(); } }
+    async function addShip(id,btn){
+      const j=DB.jobs.find(x=>String(x.id)===String(id)); if(!j)return;
+      const body=btn.closest('.ship-in');
+      const qv=parseFloat(body.querySelector('.ship-qty').value)||0;
+      const dv=body.querySelector('.ship-date').value||todayStr();
+      const nv=body.querySelector('.ship-note').value.trim();
+      if(qv===0){toast('ใส่จำนวนที่ส่ง','err');return;}
+      if(!j.ships)j.ships=[];
+      j.ships.push({date:dv, qty:qv, note:nv});
+      await save(); renderJobs(); toast('บันทึกการส่ง '+fmt(qv)+' '+j.unit,'ok');
+    }
+    async function delShip(id,idx){
+      const j=DB.jobs.find(x=>String(x.id)===String(id)); if(!j||!j.ships)return;
+      j.ships.splice(idx,1); await save(); renderJobs(); toast('ลบรายการส่งแล้ว');
+    }
+    function produceJob(id){
+      const j=DB.jobs.find(x=>String(x.id)===String(id)); if(!j||!j.formula)return;
+      // ไปแท็บผลิต เติมค่าให้
+      document.querySelector('#cmzTabs button[data-tab=produce]').click();
+      $('prodFormula').value=j.formula;
+      $('prodQty').value=jobRemaining(j)||j.qty;
+      $('prodNote').value=j.customer+' · '+j.product;
+      recalcRun();
+      toast('เตรียมตัดสต็อกสำหรับ '+j.customer,'ok');
+    }
+
+    /* ===== หน้าตั้งค่า: ขั้นตอน + โค้ด Apps Script ===== */
+    const APPS_SCRIPT_CODE =
+'// CMZ Stock — Google Apps Script (วางทับโค้ดเดิมทั้งหมด)\n'+
+'const SHEET_NAME = "CMZ_DATA";\n'+
+'\n'+
+'// รหัสลับ: ตั้งให้ตรงกับช่อง "รหัสลับ" ในหน้าตั้งค่าของเว็บ\n'+
+'// ถ้าปล่อยว่าง "" = ไม่ใช้รหัส (ใครมี URL ก็เข้าได้)\n'+
+'const SECRET = "";\n'+
+'\n'+
+'function doGet(e){\n'+
+'  if(!checkKey(e && e.parameter ? e.parameter.key : "")) return respondErr("unauthorized");\n'+
+'  return respond(readData());\n'+
+'}\n'+
+'function doPost(e){\n'+
+'  try{\n'+
+'    const body = JSON.parse(e.postData.contents);\n'+
+'    if(!checkKey(body.key)) return respondErr("unauthorized");\n'+
+'    if(body.action === "set"){ writeData(body.data); return respond({saved:true}); }\n'+
+'    return respond(readData());\n'+
+'  }catch(err){ return respondErr(err.message); }\n'+
+'}\n'+
+'function checkKey(k){ return SECRET === "" || k === SECRET; }\n'+
+'function getSheet(){\n'+
+'  const ss = SpreadsheetApp.getActiveSpreadsheet();\n'+
+'  let sh = ss.getSheetByName(SHEET_NAME);\n'+
+'  if(!sh){ sh = ss.insertSheet(SHEET_NAME); sh.getRange("A1").setValue("data"); }\n'+
+'  return sh;\n'+
+'}\n'+
+'function readData(){\n'+
+'  const sh = getSheet();\n'+
+'  const v = sh.getRange("A2").getValue();\n'+
+'  if(!v) return {ok:true, data:null};\n'+
+'  try{ return {ok:true, data:JSON.parse(v)}; }catch(e){ return {ok:true, data:null}; }\n'+
+'}\n'+
+'function writeData(data){\n'+
+'  const sh = getSheet();\n'+
+'  sh.getRange("A2").setValue(JSON.stringify(data));\n'+
+'  sh.getRange("B2").setValue(new Date());\n'+
+'  return true;\n'+
+'}\n'+
+'function respond(obj){ obj.ok = obj.ok !== false; return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON); }\n'+
+'function respondErr(msg){ return ContentService.createTextOutput(JSON.stringify({ok:false,error:msg})).setMimeType(ContentService.MimeType.JSON); }';
+
+    function renderSetup(){
+      const el=$('setupSteps'); if(!el) return;
+      el.innerHTML =
+        '<div class="setup-step"><h4>สร้าง Google Sheet ใหม่</h4>'+
+          '<p>ไปที่ <code>sheets.new</code> สร้างไฟล์เปล่า ตั้งชื่ออะไรก็ได้ เช่น "CMZ Stock Data" — ไม่ต้องสร้างคอลัมน์อะไร ระบบจัดการเอง</p></div>'+
+        '<div class="setup-step"><h4>เปิด Apps Script</h4>'+
+          '<p>ในชีต กดเมนู <code>ส่วนขยาย (Extensions)</code> → <code>Apps Script</code> จะเปิดหน้าต่างใหม่ขึ้นมา</p></div>'+
+        '<div class="setup-step"><h4>วางโค้ดนี้</h4>'+
+          '<p>ลบโค้ดเดิมที่มีทั้งหมด แล้ววางโค้ดนี้ลงไป จากนั้นกดบันทึก (รูปแผ่นดิสก์ หรือ Ctrl+S)</p>'+
+          '<p><b>ถ้าต้องการใช้รหัสลับ (แนะนำ):</b> ในโค้ด หาบรรทัด <code>const SECRET = "";</code> แล้วใส่รหัสที่คุณตั้งเองไว้ในเครื่องหมายคำพูด เช่น <code>const SECRET = "cmz-2026-x9k2";</code> — รหัสนี้ต้องตรงกับช่อง "รหัสลับ" ในหน้าตั้งค่าด้านบน (ถ้าไม่อยากใช้ ปล่อย <code>""</code> ว่างไว้)</p>'+
+          '<div class="code-block"><button onclick="cmzCopyScript(this)">คัดลอก</button>'+APPS_SCRIPT_CODE.replace(/</g,'&lt;')+'</div></div>'+
+        '<div class="setup-step"><h4>Deploy เป็น Web App</h4>'+
+          '<p>กดปุ่ม <code>Deploy</code> (มุมขวาบน) → <code>New deployment</code> → เลือกชนิดเป็น <code>Web app</code></p>'+
+          '<p>ตั้งค่า: <b>Execute as</b> = <code>Me</code> · <b>Who has access</b> = <code>Anyone</code> (สำคัญ! ต้องเป็น Anyone ระบบถึงเชื่อมได้) แล้วกด <code>Deploy</code></p>'+
+          '<p>ครั้งแรกจะให้กด Authorize — เลือกบัญชี Google ของคุณ ถ้าขึ้นเตือน "ไม่ปลอดภัย" กด Advanced → Go to (ชื่อโปรเจกต์) → Allow เป็นของปกติเพราะเป็นสคริปต์ของคุณเอง</p></div>'+
+        '<div class="setup-step"><h4>คัดลอก URL มาวางด้านบน</h4>'+
+          '<p>หลัง deploy จะได้ <b>Web app URL</b> ลงท้ายด้วย <code>/exec</code> — คัดลอกมาวางในช่อง "Apps Script Web App URL" ด้านบนสุด แล้วกด "บันทึก & ทดสอบเชื่อมต่อ"</p>'+
+          '<p>ถ้าขึ้น ✓ เชื่อมต่อสำเร็จ = เรียบร้อย! ข้อมูลจะซิงค์ขึ้น Sheet อัตโนมัติทุกครั้งที่แก้ไข เครื่องอื่นแค่ใส่ URL เดียวกันก็เห็นข้อมูลชุดเดียวกัน</p></div>';
+    }
+    window.cmzCopyScript=function(btn){
+      navigator.clipboard.writeText(APPS_SCRIPT_CODE).then(()=>{ btn.textContent='คัดลอกแล้ว ✓'; setTimeout(()=>btn.textContent='คัดลอก',1800); })
+        .catch(()=>{ toast('คัดลอกไม่สำเร็จ ลองเลือกเองนะครับ','err'); });
+    };
+    function applyCfgToForm(){
+      if($('cfgSheetUrl')) $('cfgSheetUrl').value=CFG.sheetUrl||'';
+      if($('cfgSecret')) $('cfgSecret').value=CFG.secret||'';
+      if($('cfgAutoSync')) $('cfgAutoSync').checked=CFG.autoSync!==false;
+    }
+
+    function renderAll(){ renderDash(); renderStock(); renderFormulas(); renderLedger(); renderJobs(); renderSetup(); applyCfgToForm(); refreshProdFormulas(); LU(); }
+
+    Object.assign(window, {
+      cmzExportData:exportData, cmzImportData:importData, cmzRecalcRun:recalcRun, cmzConfirmRun:confirmRun,
+      cmzSetOrderStatus:setOrderStatus, cmzSetMat:setMat, cmzSetMatStr:setMatStr, cmzDelMat:delMat, cmzAddOrReceive:addOrReceive,
+      cmzAddBomRow:addBomRow, cmzSaveFormula:saveFormula, cmzEditFormula:editFormula,
+      cmzResetFormulaForm:resetFormulaForm, cmzDelFormula:delFormula, cmzReverseRun:reverseRun,
+      cmzSaveJob:saveJob, cmzResetJobForm:resetJobForm, cmzEditJob:editJob, cmzDelJob:delJob,
+      cmzRenderJobs:renderJobs, cmzAddShip:addShip, cmzDelShip:delShip, cmzSetJobStatus:setJobStatus, cmzProduceJob:produceJob,
+      cmzRenderStock:renderStock,
+      cmzSaveSheetCfg:saveSheetCfg, cmzManualPull:manualPull, cmzManualPush:manualPush
+    });
+
+    (async ()=>{
+      await load();
+      $('prodDate').value=todayStr();
+      if($('joOrderDate')) $('joOrderDate').value=todayStr();
+      resetFormulaForm();
+      renderAll();
+      LU(); setTimeout(LU,150); setTimeout(LU,500);
+    })();
+setTimeout(function(){ try{ renderIcons(); }catch(e){} }, 300);
+</script>
+</body>
+</html>
